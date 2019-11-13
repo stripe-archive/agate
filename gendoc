@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+
+from os.path import join
+from subprocess import call, check_output
+import sys
+import re
+
+# find all modified paths using `git -s -uno`.
+modified = check_output(['git', 'status', '-s', '-uno'])
+linere = re.compile(r'^.. (.+)$')
+paths = set()
+for line in modified.split('\n'):
+    if not line:
+        continue
+    m = linere.match(line)
+    if not m:
+        print 'could not parse %r' % line
+        sys.exit(1)
+    paths.add(m.group(1))
+
+# see if any modified paths are .md files outside docs/
+dangerous = []
+for path in paths:
+    if path.endswith('.md') and not path.startswith('docs'):
+        docpath = join('docs', path)
+        if not paths(docpath):
+            dangerous.append(path)
+
+# if any dangerous modified paths exist, refuse to continue
+if dangerous:
+    print 'Manually-edited markdown files outside of docs found!'
+    print ''
+    for p in dangerous:
+        print '  %s' % p
+    print ''
+    print 'Running docs/mdoc would destroy these changes!'
+    print ''
+    print 'Please port these changes to the corresponding file in'
+    print 'the docs project, and then re-run this command.'
+    sys.exit(1)
+
+call(['sbt', 'docs/mdoc'])
