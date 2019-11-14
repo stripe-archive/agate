@@ -174,6 +174,9 @@ The options here are:
 Higher numbers for `-i` and `-wi` will take longer, but result in less
 uncertain benchmaring results.
 
+## License
+This code is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+
 ## Authors
 
 Agate was written by Erik Osheim, Oscar Boykin, Tom Switzer, and Rob Story
