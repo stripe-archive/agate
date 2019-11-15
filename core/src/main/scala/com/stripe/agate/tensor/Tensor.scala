@@ -15,6 +15,8 @@ import java.util.Arrays
 import org.typelevel.paiges.Doc
 import scala.util.{Failure, Success, Try}
 
+import scala.collection.mutable.ListBuffer
+
 import Shape._
 
 abstract class Tensor[D <: DataType] {
@@ -159,13 +161,13 @@ abstract class Tensor[D <: DataType] {
 
     val num = OnnxNumber.forDataType(dataType)
 
-    val filtered = axes.coords.foldLeft(List[Shape[Coord]]()) { (list, coord) =>
+    var filtered = new ListBuffer[Shape[Coord]]()
+
+    axes.coords.foreach { coord =>
       {
         val x = this(coord)
         if (!num.zero.equals(x)) {
-          list ++ List[Shape[Coord]](coord)
-        } else {
-          list
+          filtered += coord
         }
       }
     }
