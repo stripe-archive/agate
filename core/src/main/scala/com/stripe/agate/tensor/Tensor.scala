@@ -153,6 +153,38 @@ abstract class Tensor[D <: DataType] {
     }
   }
 
+  def nonZero: Tensor[DataType.Int64.type] = {
+    // Note that this will return a tensor of shape (rank, #nonzero)
+    // where #nonzero is the number of non-zero elements in the tensor.
+
+    val num = OnnxNumber.forDataType(dataType)
+
+    val filtered = axes.coords.foldLeft(List[Shape[Coord]]()) { (list, coord) =>
+      {
+        val x = this(coord)
+        if (!num.zero.equals(x)) {
+          list ++ List[Shape[Coord]](coord)
+        } else {
+          list
+        }
+      }
+    }
+
+    val listOfVectors = filtered.map { coords =>
+      {
+        val array = coords.toList.map(_._1).toArray
+        Tensor.vector(DataType.Int64)(array)
+      }
+    }
+
+    if (listOfVectors.isEmpty) {
+      // If there are no non-zero values, return tensor of shape (rank, 0)
+      Tensor.const(DataType.Int64)(0, Shape.axes(dims.rank, 0))
+    } else {
+      Tensor.stack(DataType.Int64, 1)(listOfVectors).get
+    }
+  }
+
   def map(f: dataType.Elem => dataType.Elem): Tensor[dataType.type] = {
     implicit val alloc = StorageAllocator.forDataType(dataType)
     val n = dims.totalSize

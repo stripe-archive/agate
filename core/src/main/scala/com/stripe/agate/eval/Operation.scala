@@ -506,4 +506,13 @@ object Operation {
         regs1 <- regs.create(output, res)
       } yield regs1
   }
+
+  case class NonZeroOp(input: Register, output: Register) extends Operation {
+    def apply(regs0: Registers): Try[Registers] =
+      for {
+        t0 <- regs0.get(input)
+        result = t0.nonZero
+        regs1 <- regs0.create(output, result)
+      } yield regs1
+  }
 }

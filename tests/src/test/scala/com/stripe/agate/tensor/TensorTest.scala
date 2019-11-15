@@ -824,4 +824,84 @@ object TensorTest extends Properties("TensorTest") {
 
     c1 && c2 && c3
   }
+
+  property("NonZero matches expected behavior") = {
+    val c0 = {
+      val t0 = tensor"[]"
+      val got = t0.nonZero
+      val expected = Tensor.const(DataType.Int64)(0, Shape.axes(1, 0))
+      Claim(got == expected)
+    }
+
+    val c1_1 = {
+      val t0 = tensor"[5, -1, 0, 4.4, 0, 666]"
+      val got = t0.nonZero
+      val expected = (tensor"[[0, 1, 3, 5]]").map(DataType.Int64)(_.toLong)
+      Claim(got == expected)
+    }
+
+    val c1_2 = {
+      val t0 = tensor"[0, 0, 0, 0]"
+      val got = t0.nonZero
+      val expected = Tensor.const(DataType.Int64)(0, Shape.axes(1, 0))
+      Claim(got == expected)
+    }
+
+    val c1_3 = {
+      val t0 = tensor"[0.1]"
+      val got = t0.nonZero
+      val expected = (tensor"[[0]]").map(DataType.Int64)(_.toLong)
+      Claim(got == expected)
+    }
+
+    val c1_4 = {
+      val t0 = tensor"[0.1, -5, 9, 12312]"
+      val got = t0.nonZero
+      val expected = (tensor"[[0, 1, 2, 3]]").map(DataType.Int64)(_.toLong)
+      Claim(got == expected)
+    }
+
+    val c2_1 = {
+      val t0 = tensor"[[0, 0, 0], [0, 0, 0]]"
+      val got = t0.nonZero
+      val expected = Tensor.const(DataType.Int64)(0, Shape.axes(2, 0))
+      Claim(got == expected)
+    }
+
+    val c2_2 = {
+      val t0 = tensor"[[0, 1, 0], [1, 0, 1]]"
+      val got = t0.nonZero
+      val expected = (tensor"[[0, 1, 1], [1, 0, 2]]").map(DataType.Int64)(_.toLong)
+      Claim(got == expected)
+    }
+
+    val c2_3 = {
+      val t0 = tensor"[[9, 1, 0], [1, 0, 1]]"
+      val got = t0.nonZero
+      val expected = (tensor"[[0, 0, 1, 1], [0, 1, 0, 2]]").map(DataType.Int64)(_.toLong)
+      Claim(got == expected)
+    }
+
+    val c2_4 = {
+      val t0 =
+        tensor"[[0.6, 0.0, 0.0, 0.0], [0.0, 0.4, 0.0, 0.0], [0.0, 0.0, 1.2, 0.0], [0.0, 0.0, 0.0,-0.4]]"
+      val got = t0.nonZero
+      val expected = (tensor"[[0, 1, 2, 3], [0, 1, 2, 3]]").map(DataType.Int64)(_.toLong)
+      Claim(got == expected)
+    }
+
+    val c3 = {
+      val t0 = tensor"[[[0, 1, 2], [1, 0, 1]], [[9, 0, 0], [0, 0, 1]]]"
+      val got = t0.nonZero
+      val expected = (tensor"[[0, 0, 0, 0, 1, 1], [0, 0, 1, 1, 0, 1], [1, 2, 0, 2, 0, 2]]").map(
+        DataType.Int64
+      )(_.toLong)
+      Claim(got == expected)
+    }
+
+    c0 &&
+    c1_1 && c1_2 && c1_3 && c1_4 &&
+    c2_1 && c2_2 && c2_3 && c2_4 &&
+    c3
+  }
 }
