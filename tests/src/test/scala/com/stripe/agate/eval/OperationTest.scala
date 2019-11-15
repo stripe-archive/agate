@@ -252,4 +252,16 @@ object OperationTest extends Properties("OperationTest") {
 
     c0 && c1 && c2 && ex1 && ex2
   }
+
+  property("NonZero works") = {
+    // Check that the NonZero operator works. Note that more detailed tests are in the TensorTest file
+
+    val c1 = {
+      val t0 = tensor"[[3, 4, 0, 6], [0, 0, 0, 7]]"
+      val expected = tensor"[[0, 0, 0, 1], [0, 1, 3, 3]]".map(DataType.Int64)(_.toLong)
+      test("NonZero", t0 :: Nil, List(expected), Map.empty)
+    }
+
+    c1
+  }
 }
