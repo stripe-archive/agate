@@ -836,7 +836,7 @@ object TensorTest extends Properties("TensorTest") {
     val c1_1 = {
       val t0 = tensor"[5, -1, 0, 4.4, 0, 666]"
       val got = t0.nonZero
-      val expected = (tensor"[[0, 1, 3, 5]]").map(DataType.Int64)(_.toLong)
+      val expected = (tensor"[[0, 1, 3, 5]]").cast(DataType.Int64)
       Claim(got == expected)
     }
 
@@ -850,14 +850,14 @@ object TensorTest extends Properties("TensorTest") {
     val c1_3 = {
       val t0 = tensor"[0.1]"
       val got = t0.nonZero
-      val expected = (tensor"[[0]]").map(DataType.Int64)(_.toLong)
+      val expected = (tensor"[[0]]").cast(DataType.Int64)
       Claim(got == expected)
     }
 
     val c1_4 = {
       val t0 = tensor"[0.1, -5, 9, 12312]"
       val got = t0.nonZero
-      val expected = (tensor"[[0, 1, 2, 3]]").map(DataType.Int64)(_.toLong)
+      val expected = (tensor"[[0, 1, 2, 3]]").cast(DataType.Int64)
       Claim(got == expected)
     }
 
@@ -871,14 +871,14 @@ object TensorTest extends Properties("TensorTest") {
     val c2_2 = {
       val t0 = tensor"[[0, 1, 0], [1, 0, 1]]"
       val got = t0.nonZero
-      val expected = (tensor"[[0, 1, 1], [1, 0, 2]]").map(DataType.Int64)(_.toLong)
+      val expected = (tensor"[[0, 1, 1], [1, 0, 2]]").cast(DataType.Int64)
       Claim(got == expected)
     }
 
     val c2_3 = {
       val t0 = tensor"[[9, 1, 0], [1, 0, 1]]"
       val got = t0.nonZero
-      val expected = (tensor"[[0, 0, 1, 1], [0, 1, 0, 2]]").map(DataType.Int64)(_.toLong)
+      val expected = (tensor"[[0, 0, 1, 1], [0, 1, 0, 2]]").cast(DataType.Int64)
       Claim(got == expected)
     }
 
@@ -886,7 +886,7 @@ object TensorTest extends Properties("TensorTest") {
       val t0 =
         tensor"[[0.6, 0.0, 0.0, 0.0], [0.0, 0.4, 0.0, 0.0], [0.0, 0.0, 1.2, 0.0], [0.0, 0.0, 0.0,-0.4]]"
       val got = t0.nonZero
-      val expected = (tensor"[[0, 1, 2, 3], [0, 1, 2, 3]]").map(DataType.Int64)(_.toLong)
+      val expected = (tensor"[[0, 1, 2, 3], [0, 1, 2, 3]]").cast(DataType.Int64)
       Claim(got == expected)
     }
 

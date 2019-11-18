@@ -155,10 +155,18 @@ abstract class Tensor[D <: DataType] {
     }
   }
 
+  /**
+   * This function computes the set of indices of a tensor for which it is non-zero.
+   * It returns a tensor of shape (rank, #nonzero),  where #nonzero is the number of
+   * non-zero elements in the tensor, and rank is the rank of the original tensor.
+   * In other words each column in the output is the index for which the original
+   * tensor has a non-zero value.
+   * See https://github.com/onnx/onnx/blob/master/docs/Operators.md#NonZero for ONNX reference
+   *
+   * Interestingly, the pytorch implementation (https://github.com/onnx/onnx/blob/master/docs/Operators.md#NonZero)
+   * returns the transpose this.
+   */
   def nonZero: Tensor[DataType.Int64.type] = {
-    // Note that this will return a tensor of shape (rank, #nonzero)
-    // where #nonzero is the number of non-zero elements in the tensor.
-
     val num = OnnxNumber.forDataType(dataType)
 
     var filtered = new ListBuffer[Shape[Coord]]()
