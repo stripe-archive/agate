@@ -102,14 +102,14 @@ object Storage {
       }
 
     def copyToArrayStorage: Storage.ArrayStorage[Float] = {
-      val len = (buffer.limit - offset).toLong
+      val len = (buffer.limit() - offset).toLong
       val writable = StorageAllocator[Float].allocate(len)
       writeInto(writable, 0L, Shape.SingleDim, len)
       writable.toArrayStorage
     }
 
     def size: Long =
-      buffer.limit - offset.toLong
+      buffer.limit() - offset.toLong
   }
 
   final case class Chunked[@specialized A](

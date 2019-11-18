@@ -1,33 +1,31 @@
 import sbt._
 import sbt.Keys._
-import com.typesafe.sbt.pgp.PgpKeys._
+import com.jsuereth.sbtpgp.PgpKeys._
 import aether.AetherKeys._
 
 object Publish {
-  val snapshotsUrl = "https://nexus-content-v2.northwest.corp.stripe.com:446/nexus/repository/maven-snapshots/"
-  val releasesUrl = "https://nexus-content-v2.northwest.corp.stripe.com:446/nexus/repository/maven-releases/"
+  val nexus = "https://oss.sonatype.org/"
 
   def getPublishTo(snapshot: Boolean) = {
     if (snapshot) {
-      val url = sys.props.get("stripe.snapshots.url").getOrElse(snapshotsUrl)
-      Some("stripe-nexus-snapshots" at url)
+      Some("Snapshots" at nexus + "content/repositories/snapshots")
     } else {
-      val url = sys.props.get("stripe.releases.url").getOrElse(releasesUrl)
-      Some("stripe-nexus-releases" at url)
+      Some("Releases" at nexus + "service/local/staging/deploy/maven2")
     }
   }
 
   lazy val settings = Seq(
-    homepage := Some(url("http://github.com/stripe-internal/agate")),
+    homepage := Some(url("https://github.com/stripe/agate")),
     publishMavenStyle := true,
-    publish := aetherDeploy.value,
+    publishArtifact in Test := false,
+    pomIncludeRepository := Function.const(false),
     publishTo := getPublishTo(isSnapshot.value),
     publishArtifact in Test := false,
     pomIncludeRepository := Function.const(false),
     pomExtra := (
       <scm>
-        <url>git@github.com:stripe-internal/agate.git</url>
-        <connection>scm:git:git@github.com:stripe-internal/agate.git</connection>
+        <url>https://github.com/stripe/agate.git</url>
+        <connection>scm:git:git@github.com:stripe/agate.git</connection>
       </scm>
       <developers>
         <developer>
