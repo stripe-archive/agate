@@ -506,4 +506,21 @@ object Operation {
         regs1 <- regs.create(output, res)
       } yield regs1
   }
+
+  /**
+   * This is the NonZero operator which computes the indices of the non-zero elements in the input
+   * tensor.
+   *
+   * Important note: Since the ONNX spec and PyTorch differ here, we are returning the transposed result
+   * in order to match what PyTorch computes.
+   *
+   */
+  case class NonZeroOp(input: Register, output: Register) extends Operation {
+    def apply(regs0: Registers): Try[Registers] =
+      for {
+        t0 <- regs0.get(input)
+        result = t0.nonZero.transposeDefault
+        regs1 <- regs0.create(output, result)
+      } yield regs1
+  }
 }

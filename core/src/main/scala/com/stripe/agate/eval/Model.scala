@@ -371,6 +371,9 @@ object Model {
           case None =>
             Failure(new Exception("ATen requires an operator (none found)"))
         }
+      },
+      OpBuilder("NonZero") { (x: OpData) =>
+        Try(Operation.NonZeroOp(x.inputs(0), x.outputs(0)))
       }
     )
 

@@ -15,6 +15,8 @@ import java.util.Arrays
 import org.typelevel.paiges.Doc
 import scala.util.{Failure, Success, Try}
 
+import scala.collection.mutable.ListBuffer
+
 import Shape._
 
 abstract class Tensor[D <: DataType] {
@@ -150,6 +152,46 @@ abstract class Tensor[D <: DataType] {
       case NonEmpty(len, _, _) =>
         val docs = (0L until len).map(i => sliceFirst(i).toDoc)
         (Doc.char('[') + Doc.intercalate(sep, docs) + Doc.char(']')).grouped
+    }
+  }
+
+  /**
+   * This function computes the set of indices of a tensor for which it is non-zero.
+   * It returns a tensor of shape (rank, #nonzero),  where #nonzero is the number of
+   * non-zero elements in the tensor, and rank is the rank of the original tensor.
+   * In other words each column in the output is the index for which the original
+   * tensor has a non-zero value.
+   * See https://github.com/onnx/onnx/blob/master/docs/Operators.md#NonZero for ONNX reference
+   *
+   * Interestingly, the pytorch implementation (https://github.com/onnx/onnx/blob/master/docs/Operators.md#NonZero)
+   * returns the transpose this.
+   */
+  def nonZero: Tensor[DataType.Int64.type] = {
+    val num = OnnxNumber.forDataType(dataType)
+
+    var filtered = new ListBuffer[Shape[Coord]]()
+
+    axes.coords.foreach { coord =>
+      {
+        val x = this(coord)
+        if (!num.zero.equals(x)) {
+          filtered += coord
+        }
+      }
+    }
+
+    val listOfVectors = filtered.map { coords =>
+      {
+        val array = coords.toList.map(_._1).toArray
+        Tensor.vector(DataType.Int64)(array)
+      }
+    }
+
+    if (listOfVectors.isEmpty) {
+      // If there are no non-zero values, return tensor of shape (rank, 0)
+      Tensor.const(DataType.Int64)(0, Shape.axes(dims.rank, 0))
+    } else {
+      Tensor.stack(DataType.Int64, 1)(listOfVectors).get
     }
   }
 
