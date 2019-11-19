@@ -38,7 +38,7 @@ lazy val agateSettings = Seq(
   coverageExcludedPackages := """onnx\.onnx\..*;onnx\.onnx_operators\..*""",
 
   // support type lambda syntax
-  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.0"),
+  addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
 
   // optimize for-comprehensions
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.0-M4"),
