@@ -24,6 +24,15 @@ object Publish {
     publishConfiguration := publishConfiguration.value.withOverwrite(true),
     pomIncludeRepository := Function.const(false),
     pomExtra := (
+      <url>https://github.com/stripe/agate</url>
+      <licenses>
+        <license>
+          <name>Apache 2</name>
+          <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+          <distribution>repo</distribution>
+          <comments>A business-friendly OSS license</comments>
+        </license>
+      </licenses>
       <developers>
         <developer>
           <name>Erik Osheim</name>
