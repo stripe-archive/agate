@@ -17,7 +17,7 @@ lazy val agateSettings = Seq(
     "org.typelevel" %% "claimant" % "0.1.1" % "test" ::
     "org.typelevel" %% "cats-core" % "1.4.0" ::
     "org.typelevel" %% "cats-effect" % "1.2.0" ::
-    "org.typelevel" %% "paiges-core" % "0.2.1" ::
+    "org.typelevel" %% "paiges-core" % "0.2.4" ::
     Nil,
 
   scalacOptions ++= options,
