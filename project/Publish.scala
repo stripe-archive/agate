@@ -2,6 +2,7 @@ import sbt._
 import sbt.Keys._
 import com.jsuereth.sbtpgp.PgpKeys._
 import aether.AetherKeys._
+import sbtrelease.ReleasePlugin.autoImport.releasePublishArtifactsAction
 
 object Publish {
   val nexus = "https://oss.sonatype.org/"
@@ -23,8 +24,8 @@ object Publish {
     publishArtifact in Test := false,
     publishConfiguration := publishConfiguration.value.withOverwrite(true),
     pomIncludeRepository := Function.const(false),
+    releasePublishArtifactsAction := publishSigned.value,
     pomExtra := (
-      <url>https://github.com/stripe/agate</url>
       <licenses>
         <license>
           <name>Apache 2</name>
