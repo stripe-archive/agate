@@ -23,10 +23,6 @@ object Publish {
     publishArtifact in Test := false,
     pomIncludeRepository := Function.const(false),
     pomExtra := (
-      <scm>
-        <url>https://github.com/stripe/agate.git</url>
-        <connection>scm:git:git@github.com:stripe/agate.git</connection>
-      </scm>
       <developers>
         <developer>
           <name>Erik Osheim</name>
