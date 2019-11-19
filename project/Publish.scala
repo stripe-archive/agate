@@ -21,6 +21,7 @@ object Publish {
     pomIncludeRepository := Function.const(false),
     publishTo := getPublishTo(isSnapshot.value),
     publishArtifact in Test := false,
+    publishConfiguration := publishConfiguration.value.withOverwrite(true),
     pomIncludeRepository := Function.const(false),
     pomExtra := (
       <developers>
