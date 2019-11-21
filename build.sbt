@@ -41,7 +41,7 @@ lazy val agateSettings = Seq(
   addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3"),
 
   // optimize for-comprehensions
-  addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.0-M4"),
+  addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
 
   PB.targets in Compile := Seq(
     scalapb.gen() -> (sourceManaged in Compile).value
