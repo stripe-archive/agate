@@ -13,14 +13,15 @@ lazy val agateSettings = Seq(
   Global / onChangedBuildSource := ReloadOnSourceChanges,
 
   libraryDependencies ++=
+    "org.scala-lang" % "scala-reflect" % scalaVersion.value ::
     "com.chuusai" %% "shapeless" % "2.3.3" ::
     "com.stripe" %% "dagon-core" % "0.3.2" ::
     "com.lihaoyi" %% "fastparse" % fastparseVersion ::
-    "com.monovore" %% "decline" % "0.6.2" ::
+    "com.monovore" %% "decline" % "1.0.0" ::
     "org.scalacheck" %% "scalacheck" % scalacheckVersion % "test" ::
     "org.typelevel" %% "claimant" % "0.1.2" % "test" ::
-    "org.typelevel" %% "cats-core" % "1.6.1" ::
-    "org.typelevel" %% "cats-effect" % "1.4.0" ::
+    "org.typelevel" %% "cats-core" % "2.0.0" ::
+    "org.typelevel" %% "cats-effect" % "2.0.0" ::
     "org.typelevel" %% "paiges-core" % "0.3.0" ::
     Nil,
 
