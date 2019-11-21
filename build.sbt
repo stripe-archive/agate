@@ -21,7 +21,7 @@ lazy val agateSettings = Seq(
     "org.typelevel" %% "claimant" % "0.1.2" % "test" ::
     "org.typelevel" %% "cats-core" % "1.6.1" ::
     "org.typelevel" %% "cats-effect" % "1.4.0" ::
-    "org.typelevel" %% "paiges-core" % "0.2.4" ::
+    "org.typelevel" %% "paiges-core" % "0.3.0" ::
     Nil,
 
   dependencyOverrides ++=
