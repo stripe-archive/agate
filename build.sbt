@@ -2,22 +2,30 @@ lazy val readmeVersion = "0.0.10"
 
 lazy val scalacheckVersion = "1.14.0"
 
+lazy val fastparseVersion = "1.0.0"
+
 lazy val agateSettings = Seq(
 
   organization := "com.stripe",
   scalaVersion := "2.12.8",
   crossScalaVersions := Seq("2.11.12", "2.12.8"),
 
+  Global / onChangedBuildSource := ReloadOnSourceChanges,
+
   libraryDependencies ++=
     "com.chuusai" %% "shapeless" % "2.3.3" ::
     "com.stripe" %% "dagon-core" % "0.3.2" ::
-    "com.lihaoyi" %% "fastparse" % "2.1.2" ::
+    "com.lihaoyi" %% "fastparse" % fastparseVersion ::
     "com.monovore" %% "decline" % "0.6.2" ::
     "org.scalacheck" %% "scalacheck" % scalacheckVersion % "test" ::
     "org.typelevel" %% "claimant" % "0.1.2" % "test" ::
     "org.typelevel" %% "cats-core" % "1.6.1" ::
     "org.typelevel" %% "cats-effect" % "1.4.0" ::
     "org.typelevel" %% "paiges-core" % "0.2.4" ::
+    Nil,
+
+  dependencyOverrides ++=
+    "com.lihaoyi" %% "fastparse" % fastparseVersion ::
     Nil,
 
   scalacOptions ++= options,
