@@ -1,6 +1,6 @@
 lazy val readmeVersion = "0.0.10"
 
-lazy val scalacheckVersion = "1.14.0"
+lazy val scalacheckVersion = "1.14.2"
 
 lazy val fastparseVersion = "1.0.0"
 
