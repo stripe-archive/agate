@@ -15,7 +15,7 @@ lazy val agateSettings = Seq(
     "com.monovore" %% "decline" % "0.4.2" ::
     "org.scalacheck" %% "scalacheck" % scalacheckVersion % "test" ::
     "org.typelevel" %% "claimant" % "0.1.2" % "test" ::
-    "org.typelevel" %% "cats-core" % "1.4.0" ::
+    "org.typelevel" %% "cats-core" % "1.6.1" ::
     "org.typelevel" %% "cats-effect" % "1.4.0" ::
     "org.typelevel" %% "paiges-core" % "0.2.4" ::
     Nil,
