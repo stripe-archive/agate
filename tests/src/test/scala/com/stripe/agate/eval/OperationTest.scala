@@ -32,11 +32,9 @@ object OperationTest extends Properties("OperationTest") {
     Model.supportedOps.get(opName) match {
       case None => Prop(false) :| s"operator $opName not supported"
       case Some(bldr) =>
-        val nums = Stream.iterate(0)(_ + 1).map { i =>
-          Register(i.toString)
-        }
-        val ins = nums.zip(inputs.toStream)
-        val outs = nums.drop(ins.size).zip(outputs.toStream)
+        val ins = inputs.zipWithIndex.map { case (n, i) => (Register(i.toString), n) }
+        val off = ins.size
+        val outs = outputs.zipWithIndex.map { case (o, i) => (Register((i + off).toString), o) }
         val opData = OpData(s"test of $opName", ins.map(_._1), outs.map(_._1), attrs)
         val registers = Registers(ins.toMap)
         bldr.build(opData).flatMap(_(registers)) match {

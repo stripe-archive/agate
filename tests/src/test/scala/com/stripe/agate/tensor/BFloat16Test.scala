@@ -1,7 +1,7 @@
 package com.stripe.agate
 package tensor
 
-import java.lang.{Double => JDouble, Float => JFloat, Integer => JInteger}
+import java.lang.{Double => JDouble, Float => JFloat, Integer => JInteger, Math}
 import org.typelevel.claimant.Claim
 import org.scalacheck.{Gen, Prop, Properties}
 import org.scalacheck.Prop.{forAllNoShrink => forAll}
@@ -127,14 +127,14 @@ object BFloat16Test extends Properties("BFloat16Test") {
     forAll(genAny, genAny) { (x, y) =>
       val lhs = (x compare y)
       val rhs = JFloat.compare(x.toFloat, y.toFloat)
-      Prop(lhs.signum == rhs.signum) :| s"$lhs ~ $rhs"
+      Prop(Math.signum(lhs) == Math.signum(rhs)) :| s"$lhs ~ $rhs"
     }
 
   property("(x compare y) is consistent (x < y)") = forAll(genNonNaN, genNonNaN) { (x, y) =>
     if (x < y) {
-      Claim(x.compare(y).signum == -1)
+      Claim(Math.signum(x.compare(y)) == -1)
     } else {
-      Claim(x.compare(y).signum != -1)
+      Claim(Math.signum(x.compare(y)) != -1)
     }
   }
 
