@@ -2,21 +2,21 @@ lazy val readmeVersion = "0.0.10"
 
 lazy val scalacheckVersion = "1.14.2"
 
-lazy val fastparseVersion = "1.0.0"
+lazy val fastparseVersion = "1.0.1"
 
 lazy val agateSettings = Seq(
 
   organization := "com.stripe",
-  scalaVersion := "2.12.8",
-  crossScalaVersions := Seq("2.11.12", "2.12.8"),
+  scalaVersion := "2.13.1",
+  crossScalaVersions := Seq("2.11.12", "2.12.8", "2.13.1"),
 
   Global / onChangedBuildSource := ReloadOnSourceChanges,
 
   libraryDependencies ++=
     "org.scala-lang" % "scala-reflect" % scalaVersion.value ::
     "com.chuusai" %% "shapeless" % "2.3.3" ::
-    "com.stripe" %% "dagon-core" % "0.3.2" ::
-    "com.lihaoyi" %% "fastparse" % fastparseVersion ::
+    "com.stripe" %% "dagon-core" % "0.3.3" ::
+    "org.scalameta" %% "fastparse" % fastparseVersion ::
     "com.monovore" %% "decline" % "1.0.0" ::
     "org.scalacheck" %% "scalacheck" % scalacheckVersion % "test" ::
     "org.typelevel" %% "claimant" % "0.1.2" % "test" ::
@@ -25,11 +25,25 @@ lazy val agateSettings = Seq(
     "org.typelevel" %% "paiges-core" % "0.3.0" ::
     Nil,
 
-  dependencyOverrides ++=
-    "com.lihaoyi" %% "fastparse" % fastparseVersion ::
-    Nil,
-
+  // shared scalac options
   scalacOptions ++= options,
+
+  // per-version scalac options
+  scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, x)) if x <= 12 =>
+      "-Xfuture" ::                          // Turn on future language features.
+      "-Xlint:by-name-right-associative" ::  // By-name parameter of right associative operator.
+      "-Xlint:unsound-match" ::              // Pattern match may not be typesafe.
+      "-Yno-adapted-args" ::                 // Do not adapt an argument list (either by inserting () or creating a tuple) to match the receiver.
+      "-Ypartial-unification" ::             // Enable partial unification in type constructor inference
+      "-Ywarn-inaccessible" ::               // Warn about inaccessible types in method signatures.
+      "-Ywarn-infer-any" ::                  // Warn when a type argument is inferred to be `Any`.
+      "-Ywarn-nullary-override" ::           // Warn when non-nullary `def f()' overrides nullary `def f'.
+      "-Ywarn-nullary-unit" ::               // Warn when nullary methods return Unit.
+      Nil
+    case _ =>
+      Nil
+  }),
   scalacOptions in (Compile, console) ~= { _.filterNot("-Xlint" == _) },
   scalacOptions in (Test, console) := (scalacOptions in (Compile, console)).value,
 
@@ -119,10 +133,8 @@ lazy val options = Seq(
   "-unchecked",                        // Enable additional warnings where generated code depends on assumptions.
   "-Xcheckinit",                       // Wrap field accessors to throw an exception on uninitialized access.
   "-Xfatal-warnings",                  // Fail the compilation if there are any warnings.
-  "-Xfuture",                          // Turn on future language features.
   "-Xlint:adapted-args",               // Warn if an argument list is modified to match the receiver.
-  "-Xlint:by-name-right-associative",  // By-name parameter of right associative operator.
-  ///"-Xlint:constant",                   // Evaluation of a constant arithmetic expression results in an error.
+  //"-Xlint:constant",                   // Evaluation of a constant arithmetic expression results in an error.
   "-Xlint:delayedinit-select",         // Selecting member of DelayedInit.
   "-Xlint:doc-detached",               // A Scaladoc comment appears to be detached from its element.
   "-Xlint:inaccessible",               // Warn about inaccessible types in method signatures.
@@ -136,22 +148,15 @@ lazy val options = Seq(
   "-Xlint:private-shadow",             // A private field (or class parameter) shadows a superclass field.
   "-Xlint:stars-align",                // Pattern sequence wildcard must align with sequence component.
   "-Xlint:type-parameter-shadow",      // A local type parameter shadows a type already in scope.
-  "-Xlint:unsound-match",              // Pattern match may not be typesafe.
-  "-Yno-adapted-args",                 // Do not adapt an argument list (either by inserting () or creating a tuple) to match the receiver.
-  "-Ypartial-unification",             // Enable partial unification in type constructor inference
   //"-Ywarn-dead-code",                  // Warn when dead code is identified.
-  ///"-Ywarn-extra-implicit",             // Warn when more than one implicit parameter section is defined.
-  "-Ywarn-inaccessible",               // Warn about inaccessible types in method signatures.
-  "-Ywarn-infer-any",                  // Warn when a type argument is inferred to be `Any`.
-  "-Ywarn-nullary-override",           // Warn when non-nullary `def f()' overrides nullary `def f'.
-  "-Ywarn-nullary-unit",               // Warn when nullary methods return Unit.
+  //"-Ywarn-extra-implicit",             // Warn when more than one implicit parameter section is defined.
   //"-Ywarn-numeric-widen",              // Warn when numerics are widened.
-  ///"-Ywarn-unused:implicits",           // Warn if an implicit parameter is unused.
-  ///"-Ywarn-unused:imports",             // Warn if an import selector is not referenced.
-  ///"-Ywarn-unused:locals",              // Warn if a local definition is unused.
-  ///"-Ywarn-unused:params",              // Warn if a value parameter is unused.
-  ///"-Ywarn-unused:patvars",             // Warn if a variable bound in a pattern is unused.
-  ///"-Ywarn-unused:privates",            // Warn if a private member is unused.
-  ////"-Ywarn-unused-imports",             // Warn if an import selector is not referenced.
+  //"-Ywarn-unused:implicits",           // Warn if an implicit parameter is unused.
+  //"-Ywarn-unused:imports",             // Warn if an import selector is not referenced.
+  //"-Ywarn-unused:locals",              // Warn if a local definition is unused.
+  //"-Ywarn-unused:params",              // Warn if a value parameter is unused.
+  //"-Ywarn-unused:patvars",             // Warn if a variable bound in a pattern is unused.
+  //"-Ywarn-unused:privates",            // Warn if a private member is unused.
+  //"-Ywarn-unused-imports",             // Warn if an import selector is not referenced.
   "-Ywarn-value-discard"               // Warn when non-Unit expression results are unused.
 )

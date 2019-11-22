@@ -2,7 +2,7 @@ package com.stripe.agate.tensor
 
 import cats.data.Chain
 import com.stripe.dagon.HMap
-import fastparse.all._
+import scala.meta.internal.fastparse.all._
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox.Context
 import scala.util.{Failure, Success, Try}

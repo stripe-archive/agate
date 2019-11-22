@@ -7,7 +7,7 @@ import org.typelevel.claimant.Claim
 import scala.util.{Failure, Success}
 
 import cats.implicits._
-import fastparse.all._
+import scala.meta.internal.fastparse.all._
 import com.stripe.agate.laws.Check._
 import TestImplicits._
 

@@ -10,8 +10,6 @@ import java.nio.file.{Files, Path}
 import onnx.onnx.{GraphProto, ModelProto, TensorProto, TensorShapeProto, TypeProto, ValueInfoProto}
 import org.typelevel.paiges.Doc
 
-import scala.collection.JavaConverters._
-
 import cats.implicits._
 
 object Agate {
@@ -72,7 +70,12 @@ object Agate {
     def showRaw(bytes: ByteString): Doc = {
       def showSize = Doc.text(s"<${bytes.size} literal bytes>")
       if (bytes.size < 30) {
-        val ascii = bytes.iterator.asScala.forall(b => 32 <= b && b < 127)
+        var ascii = true
+        val it = bytes.iterator
+        while (ascii && it.hasNext) {
+          val b = it.next
+          ascii = 32 <= b && b < 127
+        }
         if (ascii) {
           Doc.text(bytes.toStringUtf8)
         } else showSize
@@ -267,7 +270,7 @@ object Agate {
     )
 
   def main(args: Array[String]): Unit =
-    tool.parse(args) match {
+    tool.parse(args.toVector) match {
       case Left(help) =>
         println(help.toString)
         System.exit(ExitCode.Error.code)

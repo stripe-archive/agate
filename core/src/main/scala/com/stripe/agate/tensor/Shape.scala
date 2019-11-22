@@ -110,7 +110,7 @@ sealed abstract class Shape[+A] {
     valid.map { _ =>
       val shapeArray: Array[(Long, A)] = toList.toArray
       // now just remap all of these things:
-      val items = axes.reverseMap { idxLong =>
+      val items = axes.reverseIterator.map { idxLong =>
         val idx = idxLong.toInt
         shapeArray(idx)
       }
@@ -128,7 +128,7 @@ sealed abstract class Shape[+A] {
     this match {
       case Empty => Empty
       case nonEmpty =>
-        val axes = (0 until rank).toList.reverseMap(_.toLong)
+        val axes = (0 until rank).reverseIterator.map(_.toLong).toList
         // we know this get is safe
         transpose(axes).get
     }
