@@ -169,25 +169,16 @@ abstract class Tensor[D <: DataType] {
   def nonZero: Tensor[DataType.Int64.type] = {
     val num = OnnxNumber.forDataType(dataType)
 
-    val bldr = List.newBuilder[Shape[Coord]]
-    //var filtered = new ListBuffer[Shape[Coord]]()
-
+    val bldr = List.newBuilder[Tensor[DataType.Int64.type]]
     axes.coords.foreach { coord =>
-      {
-        val x = this(coord)
-        if (!num.zero.equals(x)) {
-          //filtered += coord
-          bldr += coord
-        }
+      val x = this(coord)
+      if (!num.zero.equals(x)) {
+        val array = coord.toList.map(_._1).toArray
+        bldr += Tensor.vector(DataType.Int64)(array)
       }
     }
 
-    val listOfVectors: Seq[Tensor[DataType.Int64.type]] =
-      bldr.result.map { coords =>
-        val array = coords.toList.map(_._1).toArray
-        Tensor.vector(DataType.Int64)(array)
-      }.toList
-
+    val listOfVectors = bldr.result
     if (listOfVectors.isEmpty) {
       // If there are no non-zero values, return tensor of shape (rank, 0)
       Tensor.const(DataType.Int64)(0, Shape.axes(dims.rank, 0))
