@@ -5,6 +5,8 @@ models encoded in [ONNX](https://github.com/onnx/onnx).
 
 ## Quick Start
 
+Agate supports Scala 2.11, 2.12, and 2.13.
+
 To include Agate in your SBT project, use the following snippet:
 
 ```scala
