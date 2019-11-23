@@ -1,4 +1,4 @@
-lazy val readmeVersion = "0.0.10"
+lazy val readmeVersion = "0.1.1"
 
 lazy val scalacheckVersion = "1.14.2"
 
