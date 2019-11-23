@@ -5,10 +5,12 @@ models encoded in [ONNX](https://github.com/onnx/onnx).
 
 ## Quick Start
 
+Agate supports Scala 2.11, 2.12, and 2.13.
+
 To include Agate in your SBT project, use the following snippet:
 
 ```scala
-libraryDependencies += "com.stripe" %% "agate-core" % "0.1.0"
+libraryDependencies += "com.stripe" %% "agate-core" % "0.1.1"
 ```
 
 To include Agate in your Bazel project, add the following to your
@@ -20,7 +22,7 @@ dependencies:
   com.stripe:
     agate-core:
       lang: scala
-      version: "0.1.0"
+      version: "0.1.1"
 ```
 
 ## Project Layout
