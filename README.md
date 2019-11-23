@@ -10,7 +10,7 @@ Agate supports Scala 2.11, 2.12, and 2.13.
 To include Agate in your SBT project, use the following snippet:
 
 ```scala
-libraryDependencies += "com.stripe" %% "agate-core" % "0.1.1"
+libraryDependencies += "com.stripe" %% "agate-core" % "0.0.10"
 ```
 
 To include Agate in your Bazel project, add the following to your
@@ -22,16 +22,16 @@ dependencies:
   com.stripe:
     agate-core:
       lang: scala
-      version: "0.1.1"
+      version: "0.0.10"
 ```
 
 ## Project Layout
 
 Agate has a few modules:
 
-* `core` contains all the actual library code
-* `docs` is used to build type-checked documentation
-* `bench` contains all our benchmarks
+ * `core` contains all the actual library code
+ * `docs` is used to build type-checked documentation
+ * `bench` contains all our benchmarks
 
 Currently only `core` is published (as `agate-core`).
 
@@ -63,13 +63,13 @@ This section describes how to do many common development tasks in
 Agate. Commands are often run from SBT but some commands (`coverage`,
 `fmt`, `gendoc`, and `validate`) are instead run from the shell.
 
-* [Launching SBT](#launching-sbt)
-* [Building and testing](#building-and-testing)
-* [Code formatting](#code-formatting)
-* [Doc generation](#doc-generation)
-* [Releasing](#releasing)
-* [Test coverage](#test-coverage)
-* [Benchmarking](#benchmarking)
+ * [Launching SBT](#launching-sbt)
+ * [Building and testing](#building-and-testing)
+ * [Code formatting](#code-formatting)
+ * [Doc generation](#doc-generation)
+ * [Releasing](#releasing)
+ * [Test coverage](#test-coverage)
+ * [Benchmarking](#benchmarking)
 
 ### Launching SBT
 
@@ -168,16 +168,13 @@ bench/jmh:run com.stripe.agate.bench.MatrixMultBench -i 3 -wi 3 -f1 -t1
 
 The options here are:
 
-* `-wi` is the number of "warmup" runs (before benchmarking)
-* `-i` is the number of runs to benchmark
-* `-f` is the number of processes to use (usually `1` is fine)
-* `-t` is the number of threads to use (often `1` is fine)
+ * `-wi` is the number of "warmup" runs (before benchmarking)
+ * `-i` is the number of runs to benchmark
+ * `-f` is the number of processes to use (usually `1` is fine)
+ * `-t` is the number of threads to use (often `1` is fine)
 
 Higher numbers for `-i` and `-wi` will take longer, but result in less
 uncertain benchmaring results.
-
-## License
-This code is licensed under the [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 ## Authors
 
