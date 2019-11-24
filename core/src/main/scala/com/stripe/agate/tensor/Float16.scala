@@ -285,7 +285,6 @@ class Float16(val raw: Short) extends AnyVal { lhs =>
 }
 
 object Float16 {
-
   // interesting Float16 constants
   // with the exception of NaN, values go from smallest to largest
   val NaN = new Float16(0x7c01.toShort)

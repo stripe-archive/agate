@@ -13,7 +13,6 @@ import Prop.forAll
 import com.stripe.agate.laws.Check._
 
 object GatherTest extends Properties("GatherTest") {
-
   property("gather #1") = {
     val data = Tensor(((1.0f, 1.2f), (2.3f, 3.4f), (4.5f, 5.7f))) // 3x2
     val indices = Tensor.matrix(DataType.Int32)(Array(0, 1, 1, 2), 0, 2, 2)

@@ -10,7 +10,6 @@ import java.io._
 import scala.math.pow
 
 object Float16Test extends Properties("Float16Test") {
-
   val genShort: Gen[Short] =
     Gen.choose(Short.MinValue, Short.MaxValue)
 
@@ -281,7 +280,6 @@ object Float16Test extends Properties("Float16Test") {
     exhaust(x => if (x.isNaN) true else p(x))
 
   def exhaust(p: Float16 => Boolean): Prop = {
-
     @annotation.tailrec
     def check(s: Short, acc: List[Float16]): List[Float16] = {
       val x = new Float16(s)

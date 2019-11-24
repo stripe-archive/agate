@@ -12,7 +12,6 @@ trait ToBytes[@specialized A] {
 }
 
 object ToBytes {
-
   def apply[A](implicit ev: ToBytes[A]): ToBytes[A] = ev
 
   implicit val byteToBytes: ToBytes[Byte] =

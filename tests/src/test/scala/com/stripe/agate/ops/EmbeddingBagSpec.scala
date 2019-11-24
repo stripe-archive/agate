@@ -13,7 +13,6 @@ import com.stripe.agate.laws.Check._
 import com.stripe.agate.tensor.TensorParser.Interpolation
 
 object EmbeddingBagTest extends Properties("EmbeddingBagTest") {
-
   val data = Tensor(((10.0f, 10.0f, 100.0f), (2.0f, 20.0f, 400.0f), (4.0f, 30.0f, 300.0f)))
 
   val genMode: Gen[EmbeddingBag.Mode] =
@@ -57,7 +56,6 @@ object EmbeddingBagTest extends Properties("EmbeddingBagTest") {
   }
 
   property("embedding bag sum") = {
-
     val c0 = {
       val input1 = tensor"[0]".cast(DataType.Int64)
       val got1 = EmbeddingBag(data, EmbeddingBag.Mode.Sum, input1, Some(input1), None)
@@ -97,7 +95,6 @@ object EmbeddingBagTest extends Properties("EmbeddingBagTest") {
   }
 
   property("embedding bag max") = {
-
     val c0 = {
       val input = tensor"[[0]]".cast(DataType.Int64)
       val got = EmbeddingBag(data, EmbeddingBag.Mode.Max, input, None, None)
@@ -132,7 +129,6 @@ object EmbeddingBagTest extends Properties("EmbeddingBagTest") {
   }
 
   property("embedding bag mean") = {
-
     val c0 = {
       val input = tensor"[[0]]".cast(DataType.Int64)
       val got = EmbeddingBag(data, EmbeddingBag.Mode.Mean, input, None, None)

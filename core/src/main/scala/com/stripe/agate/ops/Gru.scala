@@ -52,7 +52,6 @@ import DataType.Int32
  * - Ht = (1 - zt) (.) ht + zt (.) Ht-1
  */
 object Gru {
-
   // D must be floating
   // bias defaults to 0 if missing
   def apply(
@@ -73,7 +72,6 @@ object Gru {
       linearBeforeReset: Boolean
   ): Try[Output[dt.type]] =
     Try {
-
       val numDirections = direction.number
       val List(seqLength, batchSize, inputSize) = input.dims.components
 
@@ -227,7 +225,6 @@ object Gru {
   }
 
   object ActivationFn {
-
     case object Relu extends ActivationFn
     case object Tanh extends ActivationFn
     case object Sigmoid extends ActivationFn

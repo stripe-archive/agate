@@ -7,7 +7,6 @@ import DataType.Int32
 import Shape.{Coord, Coords, Dims, Empty, NonEmpty}
 
 object MaxPool {
-
   def apply(
       dt: DataType
   )(
@@ -20,7 +19,6 @@ object MaxPool {
       storageOrder: StorageOrder,
       strides: List[Long]
   ): Try[Output[dt.type]] = {
-
     val on: OnnxNumber[dt.Elem] = OnnxNumber.forDataType(dt)
 
     require(autoPad == AutoPad.NotSet)

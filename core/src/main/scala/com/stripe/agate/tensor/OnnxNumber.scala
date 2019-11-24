@@ -30,7 +30,6 @@ import scala.util.{Failure, Success, Try}
  * represent Onnx's notion of a number
  */
 sealed trait OnnxNumber[@specialized(Byte, Short, Int, Long, Float, Double) A] {
-
   type Data <: DataType.Aux[A]
   val dataType: Data
   def typeName: String = dataType.typeName
@@ -98,7 +97,6 @@ sealed trait OnnxFloating[@specialized(Float, Double) A] extends OnnxNumber[A] {
 }
 
 object OnnxNumber {
-
   type Aux[D <: DataType, A] = OnnxNumber[A] { type Data = D }
 
   def toIntegral[A](on: OnnxNumber[A]): Try[OnnxIntegral[A]] =

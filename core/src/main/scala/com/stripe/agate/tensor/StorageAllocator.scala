@@ -4,7 +4,6 @@ import com.stripe.dagon.HMap
 import scala.reflect.ClassTag
 
 sealed abstract class StorageAllocator[@specialized A: ClassTag] {
-
   final def allocate(size: Long): WritableStorage[A] = {
     require((0L <= size) && (size <= Int.MaxValue), s"invalid size: $size")
     WritableStorage.ArrayStorage(new Array[A](size.toInt), 0)
@@ -15,7 +14,6 @@ sealed abstract class StorageAllocator[@specialized A: ClassTag] {
 }
 
 object StorageAllocator {
-
   def apply[A](implicit ev: StorageAllocator[A]): StorageAllocator[A] = ev
 
   implicit val byteAllocator: StorageAllocator[Byte] =

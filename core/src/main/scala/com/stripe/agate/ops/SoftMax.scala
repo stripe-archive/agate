@@ -4,7 +4,6 @@ import com.stripe.agate.tensor.{DataType, OnnxFloating, OnnxNumber, Tensor}
 import scala.util.Try
 
 object Softmax {
-
   /**
    * Run the actual softmax algorithm across an entire tensor.
    */

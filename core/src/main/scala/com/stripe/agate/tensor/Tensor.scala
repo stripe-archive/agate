@@ -20,7 +20,6 @@ import scala.collection.mutable.ListBuffer
 import Shape._
 
 abstract class Tensor[D <: DataType] {
-
   val dataType: D
   def dims: Dims
   def storage: Storage[dataType.Elem]
@@ -777,7 +776,6 @@ object Tensor {
   private final val maxChunkSizeInBytes: Int = 16 * 1024 * 1024
 
   def load(path: Path, dt: DataType, axes: Axes): Resource[IO, Tensor[dt.type]] = {
-
     def fs: Resource[IO, Tensor[dt.type]] =
       loadMappedRowMajorTensor(dt, path, axes)
 

@@ -513,7 +513,6 @@ object Model {
       .map(t => (Register(name), t))
 
   def toStorage(dt: DataType, tp: TensorProto): Storage[dt.Elem] = {
-
     implicit val ct = dt.classTag
     val alloc = StorageAllocator.forDataType(dt)
 
@@ -593,7 +592,6 @@ case class Model(
     ops: List[Operation],
     output: (Register, (DataType, Axes))
 ) {
-
   def nonStaticRegisters: Vector[Register] =
     inputRegisters.filterNot(staticRegisters.registers.keySet)
 

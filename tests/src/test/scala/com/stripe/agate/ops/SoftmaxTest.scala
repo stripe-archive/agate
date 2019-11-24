@@ -14,7 +14,6 @@ import Prop.{forAllNoShrink => forAll}
 import TestImplicits._
 
 object SoftmaxTest extends Properties("SoftmaxTest") {
-
   /*
 x = np.array([[-1, 0, 1]]).astype(np.float32)
 # expected output [[0.09003058, 0.24472848, 0.66524094]]

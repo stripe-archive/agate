@@ -12,7 +12,6 @@ trait ScalarParser[E] {
 }
 
 object ScalarParser {
-
   def instance[E](pe: P[E]): ScalarParser[E] =
     new ScalarParser[E] { val parser = pe }
 
@@ -73,7 +72,6 @@ object ScalarParser {
  * useful for testing
  */
 class TensorParser[D <: DataType](val dt: D) {
-
   type E = dt.Elem
 
   val scalarParser: P[E] = ScalarParser.forDataType(dt).parser
@@ -127,7 +125,6 @@ class TensorParser[D <: DataType](val dt: D) {
 }
 
 object TensorParser {
-
   val float32: TensorParser[DataType.Float32.type] =
     new TensorParser(DataType.Float32)
 
@@ -140,7 +137,6 @@ object TensorParser {
   }
 
   object Interpolation {
-
     def parseInt64(c: Context)(args: c.Tree*): c.Expr[Tensor[DataType.Int64.type]] = null
 
     def parse(c: Context)(args: c.Tree*): c.Expr[Tensor[DataType.Float32.type]] = {

@@ -14,7 +14,6 @@ import Shape.{Axes, Axis, Coord, Coords, Dim, Dims, Empty, NonEmpty}
 import TensorParser.Interpolation
 
 object BigTensorTest extends Properties("BigTensorTest") {
-
   final val Big = 100000
   final val Small = 20
 

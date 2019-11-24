@@ -12,7 +12,6 @@ import scala.util.Random.nextInt
 
 @State(Scope.Benchmark)
 class BigTensorBench {
-
   def makeBigTensor(x: Float, axes: Shape.Axes): Tensor.F = {
     val path = Files.createTempFile("tensor", "bench")
     path.toFile.deleteOnExit()

@@ -12,7 +12,6 @@ object ConstantOfShape {
       value: Tensor[dt.type],
       shape: Tensor[DataType.Int64.type]
   ): Try[Tensor[dt.type]] = {
-
     val maybeAxes: Try[Axes] =
       if (shape.rank == 1) {
         val ns: List[Long] = shape.scalars.toList

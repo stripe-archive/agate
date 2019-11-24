@@ -23,7 +23,6 @@ sealed trait Operation {
 }
 
 object Operation {
-
   def runAll[F[_]: Foldable](fo: F[Operation])(reg: Registers): Try[Registers] =
     fo.foldM(reg) { (reg, op) =>
       op(reg)
@@ -123,7 +122,6 @@ object Operation {
 
   case class ConstantOfShape(input: Register, value: Option[Tensor.U], output: Register)
       extends Operation {
-
     private val getConst: Try[Shape.Axes => Tensor.U] = {
       value match {
         case None =>
@@ -150,7 +148,6 @@ object Operation {
         axes <- axesTen.convertDataToAxes
         regs1 <- regs0.create(output, constFn(axes))
       } yield regs1
-
   }
 
   case class ConstantOp(t: Tensor.Unknown, output: Register) extends Operation {
@@ -177,7 +174,6 @@ object Operation {
       transB: Boolean,
       output: Register
   ) extends Operation {
-
     def apply(regs0: Registers): Try[Registers] =
       for {
         t0 <- regs0.get(a)
@@ -220,7 +216,6 @@ object Operation {
       output: Register,
       indices: Option[Register]
   ) extends Operation {
-
     val indicesTry: Try[Unit] =
       indices match {
         case Some(_) => Failure(new Exception("indices output not yet supported in MaxPool"))
@@ -256,7 +251,6 @@ object Operation {
       output: Register
   ) extends Operation {
     def apply(regs0: Registers): Try[Registers] = {
-
       def getIndex(r: Register): Try[Array[Long]] =
         regs0.get(r).flatMap { ten =>
           if (ten.rank == 1) Success(ten.cast(DataType.Int64).scalars.toArray)
@@ -331,9 +325,7 @@ object Operation {
       (explicit ++ (fullAxes.map { axis =>
         (axis, fullRange(axis))
       })).toList.sortBy(_._1).map(_._2)
-
     }
-
   }
 
   case class TransposeOp(permOpt: Option[List[Long]], input: Register, output: Register)
@@ -446,7 +438,6 @@ object Operation {
       momentum: Float,
       output: Register
   ) extends Operation {
-
     def apply(regs: Registers): Try[Registers] =
       for {
         t0 <- regs.get(data)

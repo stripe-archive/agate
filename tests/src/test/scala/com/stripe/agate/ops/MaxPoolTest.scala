@@ -12,12 +12,10 @@ import Shape.Axes
 import TensorParser.Interpolation
 
 object MaxPoolTest extends Properties("MaxPoolTest") {
-
   def build(axes: Axes, xs: Iterable[Float]): Tensor[Float32.type] =
     Tensor(Float32, axes.asRowMajorDims)(Storage.ArrayStorage(xs.toArray, 0))
 
   property("maxpool_1d_default") = {
-
     val (n, c, d) = (1L, 3L, 4L)
     val total = n * c * d
 
