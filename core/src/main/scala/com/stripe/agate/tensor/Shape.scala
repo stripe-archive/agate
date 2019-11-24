@@ -5,7 +5,6 @@ import cats.implicits._
 import scala.util.{Failure, Success, Try}
 
 sealed abstract class Shape[+A] {
-
   import Shape.{Empty, NonEmpty}
 
   override def toString: String =
@@ -170,7 +169,6 @@ sealed abstract class Shape[+A] {
 }
 
 object Shape {
-
   // 1. coordinates = Shape[Coord] refers to a point (or an element)
   // 2. dimensions = Shape[Layout] refers to an axis along with a stride for data layout
   // 3. axes = Shape[Axis] refers to an axis (with no data layout)
@@ -201,7 +199,6 @@ object Shape {
     )
   }
   object AxisRange {
-
     /**
      * Make a range with a default step size of 0
      */
@@ -279,13 +276,11 @@ object Shape {
   }
 
   implicit class AxesOps(val axes: Axes) extends AnyVal {
-
     /**
      * If we have two shapes that are equal in size in all but one axis, we can
      * concatenate them along the non-equal axis
      */
     def concatenate(axis: Long, rhs: Axes): Try[Axes] = {
-
       def invalidShape =
         Failure(new Exception(s"invalid concatenate, $axes.concatenate($axis, $rhs)"))
 
@@ -539,7 +534,6 @@ object Shape {
     }
 
     def chunk(axis: Long, size: Long): Try[Seq[Dims]] = {
-
       // put this here where we capture the outer lhs and axis
       def invalid: Try[Seq[Dims]] =
         Failure(new Exception(s"dim = $lhs axis=$axis length is not divisable by $size"))
@@ -573,7 +567,6 @@ object Shape {
      * Try to broadcast the lhs into the given Axes.
      */
     def broadcastTo(axes: Axes): Try[Dims] = {
-
       def recur(revdims: List[(Long, Dim)], revaxes: List[(Long, Axis)]): Try[List[(Long, Dim)]] =
         (revdims, revaxes) match {
           case (Nil, Nil) =>
@@ -612,7 +605,6 @@ object Shape {
   }
 
   object HasCoords {
-
     private class UnsafeCoords[A] extends HasCoords[A] {
       def coords(s: Shape[A]): Iterator[Coords] = {
         def iter(s0: Shape[A]): Iterator[Coords] =
@@ -703,7 +695,6 @@ object Shape {
     ns.foldRight(empty[A]) { case ((n, a), rest) => NonEmpty(n, a, rest) }
 
   implicit class HasCoordOps[A](val lhs: Shape[A]) extends AnyVal {
-
     def axesString: String =
       lhs.components.iterator.map(_.toString).mkString("x")
 

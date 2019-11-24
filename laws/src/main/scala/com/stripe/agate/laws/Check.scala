@@ -11,7 +11,6 @@ import onnx.onnx.TensorProto
 import Shape.{Axes, Axis, Coord, Coords, Dims, Empty, NonEmpty}
 
 object Check {
-
   val genDataType: Gen[DataType] =
     Gen.oneOf(
       DataType.Uint8,
@@ -158,11 +157,10 @@ object Check {
       for {
         axis <- ga
         coords <- gc
-      } yield
-        coords.at(axis) match {
-          case Some((index, _, _)) => t.slice(axis, index)
-          case None                => t
-        }
+      } yield coords.at(axis) match {
+        case Some((index, _, _)) => t.slice(axis, index)
+        case None                => t
+      }
     }
     val f3: Tensor[dt.type] => Gen[Tensor[dt.type]] = { (t: Tensor[dt.type]) =>
       def sizeFromDim(len: Long): Gen[Long] = {

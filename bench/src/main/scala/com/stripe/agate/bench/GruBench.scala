@@ -11,7 +11,6 @@ import Shape.Axes
 
 @State(Scope.Benchmark)
 class GruBench {
-
   def init(axes: Shape.Axes): Tensor.F = {
     val data = new Array[Float](axes.totalSize.toInt)
     var i = 0

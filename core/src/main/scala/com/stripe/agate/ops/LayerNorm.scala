@@ -6,7 +6,6 @@ import scala.util.Try
 import Shape.{Coord, NonEmpty}
 
 object LayerNorm {
-
   def apply(
       dt: DataType
   )(

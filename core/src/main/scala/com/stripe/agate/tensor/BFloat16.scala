@@ -162,7 +162,6 @@ class BFloat16(val raw: Short) extends AnyVal { lhs =>
 }
 
 object BFloat16 {
-
   // interesting BFloat16 constants
   // with the exception of NaN, values go from smallest to largest
   val NaN = new BFloat16(0x7f81.toShort)

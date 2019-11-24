@@ -13,7 +13,6 @@ import org.typelevel.paiges.Doc
 import cats.implicits._
 
 object Agate {
-
   def loadModel(path: Path): IO[ModelProto] =
     Resource
       .make(IO(new FileInputStream(path.toFile)))(fis => IO(fis.close()))
@@ -24,7 +23,6 @@ object Agate {
   }
 
   case class Show(paths: NonEmptyList[Path]) extends Mode {
-
     def showShape(tsp: TensorShapeProto): Doc = {
       import TensorShapeProto.Dimension
       import Dimension.Value._

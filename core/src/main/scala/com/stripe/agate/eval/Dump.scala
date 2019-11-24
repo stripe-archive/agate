@@ -15,7 +15,6 @@ import Dump.OutputMode
 import cats.implicits._
 
 case class Dump(path: Path, output: OutputMode) extends Agate.Mode {
-
   def decodeAttribute(a: AttributeProto): (String, AttributeType, String) = {
     import AttributeType._
     val name = a.name.getOrElse("<anonymous>")
@@ -42,7 +41,6 @@ case class Dump(path: Path, output: OutputMode) extends Agate.Mode {
   }
 
   def dumpNode(node: NodeProto): Doc = {
-
     val commaSep = Doc.comma + Doc.lineOrSpace
     val equalsSep = Doc.space + Doc.char('=') + Doc.lineOrSpace
 

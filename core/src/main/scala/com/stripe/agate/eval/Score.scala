@@ -11,7 +11,6 @@ import scala.util.{Failure, Success, Try}
 import cats.implicits._
 
 case class Score(onnxPath: Path, inputs: Registers) extends Agate.Mode {
-
   def run: IO[ExitCode] =
     Model.load(onnxPath).use { m =>
       for {
@@ -23,7 +22,6 @@ case class Score(onnxPath: Path, inputs: Registers) extends Agate.Mode {
 }
 
 object Score {
-
   private val Item = """^([^= ]+)=(.+)$""".r
 
   implicit val argTensor: Argument[(Register, Tensor.Unknown)] =

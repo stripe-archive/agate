@@ -14,7 +14,6 @@ import scala.util.Try
 import Shape.Dims
 
 object BatchNormalization {
-
   // data: N x C x D1 x D2 x ...
   //
   // mean: C
@@ -28,7 +27,6 @@ object BatchNormalization {
       variance0: Tensor[dataType.type],
       epsilon: Float
   ): Try[Tensor[dataType.type]] = {
-
     implicit val alloc = StorageAllocator.forDataType(dataType)
     val num = OnnxNumber.forDataType(dataType)
     OnnxNumber.toFloating(num).map { fl =>

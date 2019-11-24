@@ -8,7 +8,6 @@ import onnx.onnx.TensorProto
 import org.scalacheck.{Arbitrary, Cogen, Gen}
 
 object Onnx {
-
   def toDims(dims: Shape.Dims): Seq[Long] =
     dims.components.map(_.toLong)
 
@@ -25,7 +24,6 @@ object Onnx {
   }
 
   def copySeq(t: Tensor.Unknown, tp: TensorProto): TensorProto = {
-
     def toSeq[A](dt: DataType)(f: dt.Elem => A): Seq[A] =
       DataType.maybeElemIs(t.dataType, dt) match {
         case Some(isa) =>

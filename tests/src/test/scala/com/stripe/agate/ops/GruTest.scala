@@ -12,7 +12,6 @@ import TensorParser.Interpolation
 import TestImplicits._
 
 object GruTest extends Properties("GruTest") {
-
   // see https://github.com/Microsoft/onnxruntime/blob/master/onnxruntime/test/providers/cpu/rnn/deep_cpu_gru_op_test.cc
 
   def runGruTest(
@@ -36,7 +35,6 @@ object GruTest extends Properties("GruTest") {
       activationAlphas: List[Float],
       activationBetas: List[Float]
   ): Prop = {
-
     val got = try {
       Gru(Float32)(
         x,
@@ -82,7 +80,6 @@ object GruTest extends Properties("GruTest") {
       y: Tensor.F,
       yH: Tensor.F
   ): Prop = {
-
     val inputSize = 1L
     val batchSize = 2
     val hiddenSize = 3
@@ -141,7 +138,6 @@ object GruTest extends Properties("GruTest") {
       linearBeforeReset: Boolean,
       oneRow: Boolean
   ): Prop = {
-
     val seqLength = 2L
     val batchSize = if (oneRow) 1 else 2
     val inputSize = 1L
@@ -272,7 +268,6 @@ object GruTest extends Properties("GruTest") {
   }
 
   property("gru forward, bias, linear before reset") = {
-
     val y: Tensor.F = tensor"""
       [ [ [0.15024948 -0.11097029 -0.02121867]
           [0.18887489 -0.09747667 0.02093463] ]
@@ -349,5 +344,4 @@ object GruTest extends Properties("GruTest") {
   // future tests should resume from line 306 of:
   //
   // https://github.com/Microsoft/onnxruntime/blob/master/onnxruntime/test/providers/cpu/rnn/deep_cpu_gru_op_test.cc#L306
-
 }

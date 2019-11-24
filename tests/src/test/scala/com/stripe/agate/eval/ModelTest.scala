@@ -16,7 +16,6 @@ import org.scalacheck.{Prop, Properties}
 import cats.implicits._
 
 object ModelTest extends Properties("ModelTest") {
-
   val gen: Gen[(String, Tensor.Unknown, TensorProto)] =
     for {
       name <- Gen.identifier

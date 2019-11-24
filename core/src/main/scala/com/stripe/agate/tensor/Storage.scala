@@ -19,7 +19,6 @@ sealed trait Storage[A] {
 }
 
 object Storage {
-
   final case class ArrayStorage[@specialized A](data: Array[A], offset: Int) extends Storage[A] {
     @inline final def apply(idx: Long): A =
       data(offset + idx.toInt)

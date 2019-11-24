@@ -8,7 +8,6 @@ import scala.util.{Failure, Success, Try}
 import Shape.Axes
 
 class Register private (override val toString: String) {
-
   override val hashCode: Int =
     toString.hashCode
 
@@ -20,13 +19,11 @@ class Register private (override val toString: String) {
 }
 
 object Register {
-
   def apply(s: String): Register =
     new Register(s.intern)
 }
 
 case class Registers(registers: Map[Register, Tensor.Unknown]) {
-
   def size: Int = registers.size
 
   def replaceAll(regs: Registers): Registers =

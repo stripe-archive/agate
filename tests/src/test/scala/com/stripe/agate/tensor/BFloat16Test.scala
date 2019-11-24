@@ -10,7 +10,6 @@ import java.io._
 import scala.math.pow
 
 object BFloat16Test extends Properties("BFloat16Test") {
-
   val genShort: Gen[Short] =
     Gen.choose(Short.MinValue, Short.MaxValue)
 
@@ -242,7 +241,6 @@ object BFloat16Test extends Properties("BFloat16Test") {
     exhaust(x => if (x.isNaN) true else p(x))
 
   def exhaust(p: BFloat16 => Boolean): Prop = {
-
     @annotation.tailrec
     def check(s: Short, acc: List[BFloat16]): List[BFloat16] = {
       val x = new BFloat16(s)

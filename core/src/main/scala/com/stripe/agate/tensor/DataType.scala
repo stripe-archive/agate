@@ -9,7 +9,6 @@ sealed abstract class DataType(val typeName: String) {
 }
 
 object DataType {
-
   type Aux[A] = DataType { type Elem = A }
 
   case object Uint8 extends DataType("uint8") {

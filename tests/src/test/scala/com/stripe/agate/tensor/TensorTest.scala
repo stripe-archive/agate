@@ -15,7 +15,6 @@ import TensorParser.Interpolation
 import TestImplicits._
 
 object TensorTest extends Properties("TensorTest") {
-
   val transposeCase: Gen[(Axes, Long, Long)] =
     for {
       axes <- genAxes
@@ -76,7 +75,6 @@ object TensorTest extends Properties("TensorTest") {
   }
 
   property("transpose laws are followed for general transpose") = {
-
     case class LawArgs(t: Tensor.U, axes: List[Long])
     val gen: Gen[LawArgs] = genTensorU.flatMap { ten =>
       val axes: Gen[List[Long]] = genPerm(ten.rank.toLong)

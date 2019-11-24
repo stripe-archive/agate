@@ -5,7 +5,6 @@ import org.scalacheck.Prop
 import scala.util.Success
 
 object TestImplicits {
-
   case class Epsilon(toFloat: Float)
 
   object Epsilon {

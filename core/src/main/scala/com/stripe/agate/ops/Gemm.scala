@@ -16,7 +16,6 @@ import scala.util.Try
 import com.stripe.agate.Util.RequireIntOps
 
 object Gemm {
-
   def transposeArray[@sp A](in: Array[A], height: Int, width: Int)(
       implicit ct: ClassTag[A]
   ): Array[A] = {
@@ -181,7 +180,6 @@ object Gemm {
           s"sizes didn't match: h0=$h0 h2=$h2 common0=$common0 common1=$common1 w1=$w1 w2=$w2"
         )
       } else {
-
         val height = h0.toInt
         val common = common0.toInt
         val width = w1.toInt

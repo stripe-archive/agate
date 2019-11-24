@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit
 
 @State(Scope.Benchmark)
 class MatrixMultBench {
-
   // left:   H x C matrix
   // right:  C x W matrix
   // output: H x W matrix

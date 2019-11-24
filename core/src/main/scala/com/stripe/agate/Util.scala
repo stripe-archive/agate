@@ -4,7 +4,6 @@ import java.lang.Float.{isNaN, MIN_NORMAL}
 import java.lang.Math
 
 object Util {
-
   implicit class RequireIntOps(val n: Long) extends AnyVal {
     def requireInt: Int =
       if ((n & 0XFFFFFFFFL) == n) n.toInt

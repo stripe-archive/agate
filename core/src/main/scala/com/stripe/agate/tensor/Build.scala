@@ -27,7 +27,6 @@ trait Build[H, E] {
 }
 
 object Build extends BuildLowPri {
-
   type Aux[H, F, E] = Build[H, F] { type Row = E }
 
   type Res[F] = (Dims, Coords => F)

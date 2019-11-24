@@ -15,13 +15,11 @@ import scala.util.Try
 import Shape._
 
 object Gather {
-
   def apply[D1 <: DataType, D2 <: DataType](
       data: Tensor[D1],
       indices: Tensor[D2],
       axis: Long
   ): Try[Tensor[data.dataType.type]] = {
-
     val num = OnnxNumber.forDataType(indices.dataType)
 
     OnnxNumber.toIntegral(num).map { in =>
@@ -57,7 +55,6 @@ object Gather {
 
       // do the work of writing out the data. at a high-level
       def writeData(output: WritableStorage[data.dataType.Elem], outputAxes: Axes): Unit = {
-
         val axisLen = data.dims.at(axis) match {
           case Some((len, _, _)) => len
           case None              => sys.error(s"axis $axis was not found in axes ${data.axes}")

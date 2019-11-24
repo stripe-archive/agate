@@ -16,7 +16,6 @@ import TestImplicits._
 import TensorParser.Interpolation
 
 object BatchNormalizationTest extends Properties("BatchNormalizationTest") {
-
   trait Args[D <: DataType] {
     val dataType: D
 
@@ -32,7 +31,6 @@ object BatchNormalizationTest extends Properties("BatchNormalizationTest") {
   }
 
   object Args {
-
     def apply(dt: DataType)(
         data0: Tensor[dt.type],
         scale0: Tensor[dt.type],

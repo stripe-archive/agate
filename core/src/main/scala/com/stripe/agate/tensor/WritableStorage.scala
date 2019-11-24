@@ -9,10 +9,8 @@ sealed trait WritableStorage[@specialized A] {
 }
 
 object WritableStorage {
-
   final case class ArrayStorage[@specialized A](ary: Array[A], offset: Int)
       extends WritableStorage[A] {
-
     final def apply(idx: Long): A =
       ary(idx.toInt + offset)
 

@@ -16,7 +16,6 @@ import TensorParser.Interpolation
 import TestImplicits._
 
 object GemmTest extends Properties("GemmTest") {
-
   // we use a slightly more forgiving tolerance for these tests
   implicit val tolerance: Epsilon = Epsilon(1e-3f)
 
@@ -29,7 +28,6 @@ object GemmTest extends Properties("GemmTest") {
       transA: Boolean,
       transB: Boolean
   ) {
-
     def withZeroA: GemmArgs =
       copy(a = Tensor.zero(a.dims.as(Axis)))
 
@@ -43,7 +41,6 @@ object GemmTest extends Properties("GemmTest") {
   }
 
   object GemmArgs {
-
     implicit val arbitraryGemmArgs: Arbitrary[GemmArgs] =
       Arbitrary(for {
         h <- Gen.choose(1, 5)

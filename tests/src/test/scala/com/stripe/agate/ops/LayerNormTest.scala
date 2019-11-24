@@ -21,7 +21,6 @@ import TestImplicits._
 // https://git.corp.stripe.com/gist/erik/82e405ca1d48739c8fe9b898f988c6bc
 
 object LayerNormTest extends Properties("LayerNormTest") {
-
   def simpleTest(n: Long, input: Tensor[Float32.type], expected: Tensor[Float32.type]): Prop = {
     require(input.dims.totalSize % n == 0L, s"${input.dims.totalSize} % $n")
     require(input.axes == expected.axes)
@@ -178,5 +177,4 @@ object LayerNormTest extends Properties("LayerNormTest") {
  [[0.33353209495544434, -1.0575919151306152, -1.4288442134857178, -0.43889710307121277, 1.0020965337753296, 1.5692939758300781, 0.741216242313385, -0.7208055853843689]]
 ]"""
   )
-
 }
