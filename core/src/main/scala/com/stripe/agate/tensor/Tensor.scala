@@ -14,10 +14,12 @@ import java.nio.file.{Files, Path}
 import java.util.Arrays
 import org.typelevel.paiges.Doc
 import scala.util.{Failure, Success, Try}
+import scala.util.control.NonFatal
 
 import scala.collection.mutable.ListBuffer
 
 import Shape._
+import Util.RequireIntOps
 
 abstract class Tensor[D <: DataType] {
   val dataType: D
@@ -750,24 +752,55 @@ object Tensor {
   def loadBytes(bytes: Array[Byte], dt: DataType, axes: Axes): Try[Tensor[dt.type]] = {
     implicit val alloc = StorageAllocator.forDataType(dt)
     val size = axes.totalSize
-    val tb = ToBytes.forDataType(dt)
-    val step = tb.size
-    val len = size * step
-    if (bytes.length < len)
-      Failure(TensorException.InsufficentBytesToLoad(bytes.length.toLong, dt, len))
-    else
-      Success {
-        val data = alloc.allocate(size)
-        var i = 0
-        var j = 0L
-        while (i < len) {
-          val x = tb.read(bytes, i)
-          data.writeAt(j, x)
-          i += step
-          j += 1L
-        }
-        Tensor(dt, axes.asRowMajorDims)(data.toStorage)
+    val data = alloc.allocate(size)
+    if (size == 0L) {
+      Success(Tensor(dt, axes.asRowMajorDims)(data.toStorage))
+    } else {
+      val tb = ToBytes.forDataType(dt)
+      val step = tb.strategy match {
+        case ToBytes.Strategy.FixedLength(size) => size
+        case _                                  => 8
       }
+      val len = size * step
+      if (bytes.length < len)
+        Failure(TensorException.InsufficentBytesToLoad(bytes.length.toLong, dt, len))
+      else
+        try {
+          var i = 0
+          var j = 0L
+          if (tb.isFixedLength) {
+            while (i < len) {
+              val x = tb.read(bytes, i)
+              data.writeAt(j, x)
+              i += step
+              j += 1L
+            }
+          } else {
+            val otb = ToBytes.longToBytes
+            try {
+              while (i < len) {
+                val offset = otb.read(bytes, i).requireInt
+                val x = tb.read(bytes, offset)
+                data.writeAt(j, x)
+                i += step
+                j += 1L
+              }
+            } catch {
+              case (t: IndexOutOfBoundsException) =>
+                val minBytes = otb.read(bytes, (len.toInt - step)) + 1
+                throw new TensorException.InsufficentBytesToLoad(
+                  bytes.length.toLong,
+                  dt,
+                  minBytes,
+                  t
+                )
+            }
+          }
+          Success(Tensor(dt, axes.asRowMajorDims)(data.toStorage))
+        } catch {
+          case NonFatal(t) => Failure(t)
+        }
+    }
   }
 
   // ~32MB

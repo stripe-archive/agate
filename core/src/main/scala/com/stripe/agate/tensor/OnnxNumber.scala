@@ -525,7 +525,10 @@ object OnnxNumber {
     }
 
   def forDataType(dt: DataType): OnnxNumber[dt.Elem] =
-    forDataTypeMap(dt)
+    forDataTypeMap.get(dt: DataType.Aux[dt.Elem]) match {
+      case Some(num) => num
+      case None      => throw new IllegalArgumentException(s"not a numeric datatype=$dt")
+    }
 
   private[this] val forDataTypeMap: HMap[DataType.Aux, OnnxNumber] =
     HMap

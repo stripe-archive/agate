@@ -1,6 +1,7 @@
 package com.stripe.agate.tensor
 
 import cats.evidence.Is
+import com.google.protobuf.ByteString
 import scala.reflect.ClassTag
 
 sealed abstract class DataType(val typeName: String) {
@@ -49,6 +50,10 @@ object DataType {
   }
   case object Float64 extends DataType("float64") {
     type Elem = Double
+    val classTag = implicitly[ClassTag[Elem]]
+  }
+  case object String extends DataType("string") {
+    type Elem = ByteString
     val classTag = implicitly[ClassTag[Elem]]
   }
 
