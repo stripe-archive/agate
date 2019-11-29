@@ -188,6 +188,14 @@ object ToBytes {
       }
     }
 
+  implicit val booleanToBytes: ToBytes[Boolean] =
+    new ToBytes[Boolean] {
+      def strategy: Strategy[Boolean] = Strategy.FixedLength(1)
+      def read(bytes: Array[Byte], i: Int): Boolean = bytes(i) != 0
+      def put(os: OutputStream, n: Boolean): Unit =
+        os.write(if (n) 1 else 0)
+    }
+
   val forDataTypeMap: HMap[DataType.Aux, ToBytes] =
     HMap
       .empty[DataType.Aux, ToBytes]
@@ -202,6 +210,7 @@ object ToBytes {
       .updated(DataType.Float32, floatToBytes)
       .updated(DataType.Float64, doubleToBytes)
       .updated(DataType.String, byteStringToBytes)
+      .updated(DataType.Bool, booleanToBytes)
 
   def forDataType(dt: DataType): ToBytes[dt.Elem] =
     forDataTypeMap(dt)

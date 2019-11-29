@@ -172,12 +172,14 @@ abstract class Tensor[D <: DataType] {
    * returns the transpose this.
    */
   def nonZero: Tensor[DataType.Int64.type] = {
-    val num = OnnxNumber.forDataTypeOrThrow(dataType)
+    val zero =
+      if (dataType == DataType.Bool) false // bool is supported type.
+      else OnnxNumber.forDataTypeOrThrow(dataType).zero
 
     val bldr = List.newBuilder[Tensor[DataType.Int64.type]]
     axes.coords.foreach { coord =>
       val x = this(coord)
-      if (!num.zero.equals(x)) {
+      if (!zero.equals(x)) {
         val array = coord.toList.map(_._1).toArray
         bldr += Tensor.vector(DataType.Int64)(array)
       }

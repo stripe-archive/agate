@@ -43,7 +43,7 @@ object Model {
       case DataType.Int32   => 6
       case DataType.Int64   => 7
       case DataType.String  => 8
-      // Boolean => 9
+      case DataType.Bool    => 9
       case DataType.Float16 => 10
       case DataType.Float64 => 11
       // Uint32 => 12
@@ -69,6 +69,7 @@ object Model {
       case 6     => Success(DataType.Int32)
       case 7     => Success(DataType.Int64)
       case 8     => Success(DataType.String)
+      case 9     => Success(DataType.Bool)
       case 10    => Success(DataType.Float16)
       case 11    => Success(DataType.Float64)
       case 16    => Success(DataType.BFloat16)
@@ -536,6 +537,7 @@ object Model {
       case d: DataType.Float32.type  => conv(d)(tp.floatData)(x => x)
       case d: DataType.Float64.type  => conv(d)(tp.doubleData)(x => x)
       case d: DataType.String.type   => conv(d)(tp.stringData)(x => x)
+      case d: DataType.Bool.type     => conv(d)(tp.int32Data)(_ != 0)
     }
   }
 

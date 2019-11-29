@@ -56,6 +56,10 @@ object DataType {
     type Elem = ByteString
     val classTag = implicitly[ClassTag[Elem]]
   }
+  case object Bool extends DataType("bool") {
+    type Elem = Boolean
+    val classTag = implicitly[ClassTag[Elem]]
+  }
 
   private[this] val someRefl: Option[Is[Any, Any]] =
     Some(Is.refl[Any])

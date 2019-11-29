@@ -30,6 +30,7 @@ object OnnxShow {
     bldr.append("'")
     bldr.toString
   }
+  val showBool: Show[Boolean] = Show.fromToString
 
   def forDataType(dt: DataType): Show[dt.Elem] =
     forDataTypeMap(dt)
@@ -48,4 +49,5 @@ object OnnxShow {
       .updated(DataType.Float32, showFloat32)
       .updated(DataType.Float64, showFloat64)
       .updated(DataType.String, showString)
+      .updated(DataType.Bool, showBool)
 }
