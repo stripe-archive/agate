@@ -730,7 +730,7 @@ object TensorTest extends Properties("TensorTest") {
     c1 && c2 && c3
   }
 
-  property("sum all axes matches sum") = forAll { ten: Tensor.U =>
+  property("sum all axes matches sum") = forAll(genNumericTensor) { ten: Tensor.U =>
     implicit val tolerance = ten.dataType match {
       case DataType.BFloat16 => Epsilon(0.5f)
       case DataType.Float16  => Epsilon(0.2f)
@@ -748,22 +748,24 @@ object TensorTest extends Properties("TensorTest") {
     // Make sure to generate rank 1 or greater tensors
     case class Arg(t: Tensor.U, axis: Long, copies: Int)
     lazy val argGen: Gen[Arg] =
-      genTensorU.flatMap { ten =>
-        val axes = ten.axes
-        if (axes.nonEmpty) {
-          Gen
-            .choose(0L, axes.rank - 1L)
-            .flatMap { axis =>
-              Gen.choose(1, 10).map { copies =>
-                Arg(ten, axis, copies)
+      genTensorU
+        .filter(_.isNumeric)
+        .flatMap { ten =>
+          val axes = ten.axes
+          if (axes.nonEmpty) {
+            Gen
+              .choose(0L, axes.rank - 1L)
+              .flatMap { axis =>
+                Gen.choose(1, 10).map { copies =>
+                  Arg(ten, axis, copies)
+                }
               }
-            }
-        } else argGen
-      }
+          } else argGen
+        }
 
     forAll(argGen) {
       case Arg(t, axis, copies) =>
-        val num = OnnxNumber.forDataType(t.dataType)
+        val num = OnnxNumber.forDataTypeOrThrow(t.dataType)
         val cat = Tensor.concatenate(t.dataType, axis = axis)(List.fill(copies)(t.asDataTyped)).get
         val copiesTpe = List.fill(copies)(num.one).reduce(num.plus(_, _))
 

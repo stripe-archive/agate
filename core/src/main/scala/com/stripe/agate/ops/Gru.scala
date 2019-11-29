@@ -78,7 +78,7 @@ object Gru {
       // println(s"input=${input.axes}")
       // println(s"weight=${weight.axes}")
 
-      val of: OnnxFloating[dt.Elem] = OnnxNumber.toFloating(OnnxNumber.forDataType(dt)).get
+      val of: OnnxFloating[dt.Elem] = OnnxNumber.toFloating(OnnxNumber.forDataTypeOrThrow(dt)).get
 
       // [ [ a b c d e f ] ]
       // splitAt(axis = 1, size = 2)

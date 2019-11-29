@@ -45,14 +45,10 @@ object Storage {
       if (len == 0L) ()
       else {
         val Dim(off, stride) = dim
-        if (tb.isFixedLength) {
-          writeIntoStreamFixedLength(os, off.requireInt, stride.requireInt, len.requireInt, tb)
-        } else {
-          writeIntoStreamVarLength(os, off.requireInt, stride.requireInt, len.requireInt, tb)
-        }
+        writeIntoStreamImpl(os, off.requireInt, stride.requireInt, len.requireInt, tb)
       }
 
-    private def writeIntoStreamFixedLength(
+    private def writeIntoStreamImpl(
         os: OutputStream,
         off: Int,
         stride: Int,
@@ -61,37 +57,6 @@ object Storage {
     ): Unit = {
       var i = 0
       var j = offset + off
-      while (i < len) {
-        tb.put(os, data(j))
-        i += 1
-        j += stride
-      }
-    }
-
-    private def writeIntoStreamVarLength(
-        os: OutputStream,
-        off: Int,
-        stride: Int,
-        len: Int,
-        tb: ToBytes[A]
-    ): Unit = {
-      val otb = ToBytes.longToBytes
-      val initOffset = offset + off
-      // Write the data offsets first. The first data element is written
-      // immediately after all the offset values have been written.
-      var dataOffset: Long = len * 8
-      var i = 0
-      var j = initOffset
-      while (i < len) {
-        otb.put(os, dataOffset)
-        dataOffset += tb.size(data(j))
-        i += 1
-        j += stride
-      }
-      // Write the data after. The offsets can provide fast indexing into
-      // these data if need be (eg for ByteBuffer-based storage).
-      i = 0
-      j = initOffset
       while (i < len) {
         tb.put(os, data(j))
         i += 1
@@ -207,29 +172,8 @@ object Storage {
     }
 
     def writeIntoStream(os: OutputStream, dim: Dim, len: Long)(implicit tb: ToBytes[A]): Unit =
-      if (tb.isFixedLength) {
-        // In this case, we can just write them all out sequentially.
-        foldLen(dim, len, ()) { (storage, _, d, l) =>
-          storage.writeIntoStream(os, d, l)(tb)
-        }
-      } else {
-        // Write out index first.
-        val otb = ToBytes.longToBytes
-        foldLen(dim, len, 0L) { (storage, chunkOffset, d, l) =>
-          var offset = chunkOffset
-          foreachElem(storage, d, l) { a =>
-            otb.put(os, offset)
-            offset += tb.size(a)
-            ()
-          }
-          offset
-        }
-        // Write out the data after the index.
-        foldLen(dim, len, ()) { (storage, _, d, l) =>
-          foreachElem(storage, d, l) { a =>
-            tb.put(os, a)
-          }
-        }
+      foldLen(dim, len, ()) { (storage, _, d, l) =>
+        storage.writeIntoStream(os, d, l)(tb)
       }
 
     def writeInto(out: WritableStorage[A], offset: Long, dim: Dim, len: Long): Unit = {
@@ -239,21 +183,6 @@ object Storage {
         o + l
       }
       ()
-    }
-  }
-
-  // This is a convenience method to iterate over elements in some storage
-  // using its apply method. This should typically not be used for fixed-length
-  // primitive types, but for variable-length types it is less bad, since the
-  // values are already boxed and we only pay for the overhead of calling f.
-  private def foreachElem[A](storage: Storage[A], dim: Dim, len: Long)(f: A => Unit): Unit = {
-    val Dim(offset, stride) = dim
-    var j = offset
-    var i = 0L
-    while (i < len) {
-      f(storage(j))
-      i += 1L
-      j += stride
     }
   }
 

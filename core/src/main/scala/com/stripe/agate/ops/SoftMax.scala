@@ -52,9 +52,11 @@ object Softmax {
     if (axis < 0) {
       Try(sys.error(s"invalid axis: $axis"))
     } else {
-      val num: OnnxNumber[input.dataType.Elem] = OnnxNumber.forDataType(input.dataType)
-      OnnxNumber.toFloating(num).flatMap { (fl: OnnxFloating[input.dataType.Elem]) =>
-        Try(run(input.dataType)(axis, fl, input.asDataTyped))
+      for {
+        num <- OnnxNumber.forDataType(input.dataType)
+        fl <- OnnxNumber.toFloating(num)
+      } yield {
+        run(input.dataType)(axis, fl, input.asDataTyped)
       }
     }
 }

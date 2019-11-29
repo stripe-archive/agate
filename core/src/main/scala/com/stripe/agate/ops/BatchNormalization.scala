@@ -26,10 +26,12 @@ object BatchNormalization {
       mean0: Tensor[dataType.type],
       variance0: Tensor[dataType.type],
       epsilon: Float
-  ): Try[Tensor[dataType.type]] = {
-    implicit val alloc = StorageAllocator.forDataType(dataType)
-    val num = OnnxNumber.forDataType(dataType)
-    OnnxNumber.toFloating(num).map { fl =>
+  ): Try[Tensor[dataType.type]] =
+    for {
+      num <- OnnxNumber.forDataType(dataType)
+      fl <- OnnxNumber.toFloating(num)
+    } yield {
+      implicit val alloc = StorageAllocator.forDataType(dataType)
       implicit val floatA = fl
 
       require(data0.rank > 0)
@@ -75,5 +77,4 @@ object BatchNormalization {
       val axes: Dims = outputAxes.asRowMajorDims
       Tensor(dataType, axes)(st)
     }
-  }
 }

@@ -156,7 +156,7 @@ object Gemm {
       transA: Boolean,
       transB: Boolean
   ): Try[Tensor[dataType.type]] = Try {
-    implicit val onnxA = OnnxNumber.forDataType(dataType)
+    implicit val onnxA = OnnxNumber.forDataTypeOrThrow(dataType)
     implicit val alloc = StorageAllocator.forDataType(dataType)
     if (a0.dims.rank != 2 || b0.dims.rank != 2) {
       sys.error(s"dimension were wrong: a=${a0.axes.axesString} b=${b0.axes.axesString}")
@@ -207,7 +207,7 @@ object Gemm {
             val xa = intoRowMajorArray[dataType.Elem](a)(ct)
             val xb = intoColMajorArray[dataType.Elem](b)(ct)
             val xc = intoRowMajorArray[dataType.Elem](c)(ct)
-            val on = OnnxNumber.forDataType(dataType)
+            val on = OnnxNumber.forDataTypeOrThrow(dataType)
             val xout = arrayGemm[dataType.Elem](
               xa,
               xb,

@@ -15,7 +15,6 @@ object LayerNorm {
       bias: Option[Tensor[dt.type]],
       eps: Double
   ): Try[Tensor[dt.type]] = {
-    val on = OnnxNumber.forDataType(dt)
     val axes = input.axes
     val cs = input.dims.components
     val inputSize = cs.size
@@ -23,7 +22,7 @@ object LayerNorm {
     val total = input.dims.totalSize
     val n = cs.take(inputSize - normalizedSize).foldLeft(1L)(_ * _)
 
-    def finish(out: Tensor[dt.type]): Try[Tensor[dt.type]] =
+    def finish(out: Tensor[dt.type], on: OnnxNumber[dt.Elem]): Try[Tensor[dt.type]] =
       (weight, bias) match {
         case (Some(w), Some(b)) =>
           val ow = Tensor
@@ -43,18 +42,21 @@ object LayerNorm {
       }
 
     for {
+      on <- OnnxNumber.forDataType(dt)
       div <- Try { require(total % n == 0); total / n }
       reshaped <- input.reshape(Shape.axes(1L, n, div))
       reshapedOut <- LayerNorm.normalize(dt)(reshaped, eps.toDouble)
       out <- reshapedOut.reshape(axes)
-      res <- finish(out)
+      res <- finish(out, on)
     } yield res
   }
 
-  def normalize(dt: DataType)(input: Tensor[dt.type], epsilon: Double): Try[Tensor[dt.type]] = {
-    implicit val alloc = StorageAllocator.forDataType(dt)
-    val num = OnnxNumber.forDataType(dt)
-    OnnxNumber.toFloating(num).map { fl =>
+  def normalize(dt: DataType)(input: Tensor[dt.type], epsilon: Double): Try[Tensor[dt.type]] =
+    for {
+      num <- OnnxNumber.forDataType(dt)
+      fl <- OnnxNumber.toFloating(num)
+    } yield {
+      implicit val alloc = StorageAllocator.forDataType(dt)
       implicit val floatA = fl
 
       val (saveMean, saveInvStd) = LayerNorm.stats(dt)(input, epsilon).get
@@ -83,14 +85,15 @@ object LayerNorm {
 
       Tensor(dt, input.dims)(output.toStorage)
     }
-  }
 
   def stats(
       dt: DataType
-  )(input: Tensor[dt.type], epsilon: Double): Try[(Tensor[dt.type], Tensor[dt.type])] = {
-    implicit val alloc = StorageAllocator.forDataType(dt)
-    val num = OnnxNumber.forDataType(dt)
-    OnnxNumber.toFloating(num).map { fl =>
+  )(input: Tensor[dt.type], epsilon: Double): Try[(Tensor[dt.type], Tensor[dt.type])] =
+    for {
+      num <- OnnxNumber.forDataType(dt)
+      fl <- OnnxNumber.toFloating(num)
+    } yield {
+      implicit val alloc = StorageAllocator.forDataType(dt)
       implicit val floatA = fl
 
       require(input.rank > 1)
@@ -122,5 +125,4 @@ object LayerNorm {
       val t2 = Tensor(dt, ds)(saveVarTransform.toStorage)
       (t1, t2)
     }
-  }
 }

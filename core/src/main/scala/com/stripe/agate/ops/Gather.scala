@@ -19,10 +19,11 @@ object Gather {
       data: Tensor[D1],
       indices: Tensor[D2],
       axis: Long
-  ): Try[Tensor[data.dataType.type]] = {
-    val num = OnnxNumber.forDataType(indices.dataType)
-
-    OnnxNumber.toIntegral(num).map { in =>
+  ): Try[Tensor[data.dataType.type]] =
+    for {
+      num <- OnnxNumber.forDataType(indices.dataType)
+      in <- OnnxNumber.toIntegral(num)
+    } yield {
       implicit val oi: OnnxIntegral[indices.dataType.Elem] = in
       implicit val alloc = StorageAllocator.forDataType(data.dataType)
 
@@ -93,5 +94,4 @@ object Gather {
         }
         .get
     }
-  }
 }
