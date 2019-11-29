@@ -28,10 +28,9 @@ object Check {
     )
 
   val genByteString: Gen[ByteString] =
-    Gen.choose(Byte.MinValue, Byte.MaxValue).map { b =>
-      ByteString.copyFrom(Array(b))
+    Gen.listOf(Gen.choose(Byte.MinValue, Byte.MaxValue)).map { bs =>
+      ByteString.copyFrom(bs.toArray)
     }
-  //Gen.listOf(Gen.choose(Byte.MinValue, Byte.MaxValue)).map { bs => ByteString.copyFrom(bs.toArray) }
 
   implicit val arbByteString: Arbitrary[ByteString] =
     Arbitrary(genByteString)
