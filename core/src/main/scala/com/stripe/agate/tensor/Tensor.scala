@@ -224,9 +224,12 @@ abstract class Tensor[D <: DataType] {
         //isa.substitute[Tensor](this)
         this.asInstanceOf[Tensor[dest.type]] //fixme
       case None =>
-        val f: dataType.Elem => dest.Elem =
-          OnnxNumber.cast(dataType, dest)
-        this.map(dest)(f)
+        OnnxNumber.cast(dataType, dest) match {
+          case Some(f) =>
+            this.map(dest)(f)
+          case None =>
+            throw new IllegalArgumentException(s"cannot cast from $dataType to $dest")
+        }
     }
 
   /**

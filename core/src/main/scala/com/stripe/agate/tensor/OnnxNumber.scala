@@ -534,14 +534,20 @@ object OnnxNumber {
       .updated(DataType.Float32, OnnxNumber.Float32)
       .updated(DataType.Float64, OnnxNumber.Float64)
 
-  def cast(from: DataType, to: DataType): from.Elem => to.Elem = {
-    val onF = forDataTypeOrThrow(from)
-    val onT = forDataTypeOrThrow(to)
-
-    if (onT.isInstanceOf[OnnxIntegral[_]]) { (a: from.Elem) =>
-      onT.fromLong(onF.toLong(a))
-    } else { (a: from.Elem) =>
-      onT.fromDouble(onF.toDouble(a))
+  def cast(from: DataType, to: DataType): Option[from.Elem => to.Elem] =
+    forDataTypeMap.get(from: DataType.Aux[from.Elem]) match {
+      case Some(onF) =>
+        forDataTypeMap.get(to: DataType.Aux[to.Elem]) match {
+          case Some(onT) =>
+            if (onT.isInstanceOf[OnnxIntegral[_]]) Some({ (a: from.Elem) =>
+              onT.fromLong(onF.toLong(a))
+            })
+            else
+              Some({ (a: from.Elem) =>
+                onT.fromDouble(onF.toDouble(a))
+              })
+          case None => None
+        }
+      case None => None
     }
-  }
 }
