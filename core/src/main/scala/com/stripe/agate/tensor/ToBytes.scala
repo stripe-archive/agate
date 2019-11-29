@@ -10,17 +10,22 @@ import com.stripe.dagon.HMap
  * A type class for serializing values of type `A` into bytes.
  */
 trait ToBytes[@specialized A] {
+
   /**
    * The strategy is used to determine whether values of type `A` are a "fixed
-   * length" type or "variable length." In the case of fixed length types, the
-   * same amount of bytes will always be used to serialize a value.  For
-   * example, all `Int` values require 4 bytes. However, some types are
-   * variable length, like `ByteString`, and may require any number of bytes.
-   * In this case, we need to be able to quickly determine the size of a
-   * serialized value at runtime.
+   * length" encoding or "variable length" encoding. In the case of fixed
+   * length encodings, the same amount of bytes will always be used to
+   * serialize a value. For example, all `Int` values require 4 bytes. To
+   * serialize a tensor, we can just encode all the values in row-major order.
+   * For types with a variable length encoding, like `ByteString`, each value
+   * may require a different number of bytes. In this case, we need to be able
+   * to quickly determine the size of a serialized value at runtime. This size
+   * can be used when serializing a tensor to compute an index of offsets,
+   * which can be serialized along with the data. The index allows for random
+   * access into the serialized data.
    *
    * Note: Ideally, we'd just have 2 sub-classes of `ToBytes` to describe the
-   * different strategies, but this doesn't play well with serialization and
+   * different strategies, but this doesn't play well with specialization and
    * pattern matching.
    */
   def strategy: ToBytes.Strategy[A]
