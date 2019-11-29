@@ -24,7 +24,8 @@ object Check {
       DataType.Float16,
       DataType.Float32,
       DataType.Float64,
-      DataType.String
+      DataType.String,
+      DataType.Bool
     )
 
   val genByteString: Gen[ByteString] =
@@ -49,6 +50,7 @@ object Check {
       .updated(DataType.Float32, Gen.choose(-10f, 10f))
       .updated(DataType.Float64, Gen.choose(-10.0, 10.0))
       .updated(DataType.String, genByteString)
+      .updated(DataType.Bool, Gen.oneOf(false, true))
 
   def genElemForType(dt: DataType): Gen[dt.Elem] =
     elemForTypeMap[dt.Elem](dt)
