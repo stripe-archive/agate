@@ -231,7 +231,16 @@ abstract class Tensor[D <: DataType] {
           case Some(f) =>
             this.map(dest)(f)
           case None =>
-            throw new IllegalArgumentException(s"cannot cast from $dataType to $dest")
+            OnnxNumber.forDataType(dest) match {
+              case Success(num) if dataType == DataType.Bool =>
+                val f = num.fromLong(0L)
+                val t = num.fromLong(1L)
+                this.map(dest) { (x: Any) =>
+                  if (x == true) t else f
+                }
+              case _ =>
+                throw new IllegalArgumentException(s"cannot cast from $dataType to $dest")
+            }
         }
     }
 
