@@ -17,16 +17,17 @@ object OnnxShow {
   val showFloat64: Show[Double] = Show.fromToString
   val showString: Show[ByteString] = Show.show { s =>
     // Renders a Python-style bytes string.
-    val bldr = new StringBuilder()
+    val bldr = new StringBuilder("'")
     val it = s.iterator()
     while (it.hasNext) {
       val c = it.nextByte().toInt
-      if (c >= 32 && c <= 126) {
+      if ((c >= 32 && c <= 126) && (c != '\''.toInt) && (c != '\\'.toInt)) {
         bldr.append(c.toChar)
       } else {
         bldr.append(f"\\x$c%02x")
       }
     }
+    bldr.append("'")
     bldr.toString
   }
 
