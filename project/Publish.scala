@@ -7,9 +7,21 @@ import sbtrelease.ReleasePlugin.autoImport.releasePublishArtifactsAction
 object Publish {
   val nexus = "https://oss.sonatype.org/"
 
+  def overrideSnapshotRepo = for {
+    name <- sys.props.get("agate.snapshots.name")
+    url <- sys.props.get("agate.snapshots.url")
+  } yield (name at url)
+
+  def useAether: Boolean = sys.props.get("agate.snapshots.aether") match {
+    case Some("true") => true
+    case Some("false") | None => false
+    case Some(other) =>
+      throw new IllegalArgumentException(s"agate.snapshots.aether: expected true or false, found $other")
+  }
+
   def getPublishTo(snapshot: Boolean) = {
     if (snapshot) {
-      Some("Snapshots" at nexus + "content/repositories/snapshots")
+      overrideSnapshotRepo.orElse(Some("Snapshots" at nexus + "content/repositories/snapshots"))
     } else {
       Some("Releases" at nexus + "service/local/staging/deploy/maven2")
     }
@@ -20,6 +32,13 @@ object Publish {
     publishMavenStyle := true,
     publishArtifact in Test := false,
     pomIncludeRepository := Function.const(false),
+    publish := {
+      if (isSnapshot.value && useAether) {
+        (aetherDeploy.value: @sbtUnchecked)
+      } else {
+        (publish.value: @sbtUnchecked)
+      }
+    },
     publishTo := getPublishTo(isSnapshot.value),
     publishArtifact in Test := false,
     publishConfiguration := publishConfiguration.value.withOverwrite(true),
