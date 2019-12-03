@@ -2,6 +2,7 @@ package com.stripe.agate
 package laws
 
 import cats.implicits._
+import com.google.protobuf.ByteString
 import com.stripe.agate.tensor.{DataType, Shape, Tensor}
 import com.stripe.dagon.HMap
 import org.scalacheck.{Arbitrary, Cogen, Gen}
@@ -22,8 +23,17 @@ object Check {
       DataType.BFloat16,
       DataType.Float16,
       DataType.Float32,
-      DataType.Float64
+      DataType.Float64,
+      DataType.String
     )
+
+  val genByteString: Gen[ByteString] =
+    Gen.listOf(Gen.choose(Byte.MinValue, Byte.MaxValue)).map { bs =>
+      ByteString.copyFrom(bs.toArray)
+    }
+
+  implicit val arbByteString: Arbitrary[ByteString] =
+    Arbitrary(genByteString)
 
   val elemForTypeMap: HMap[DataType.Aux, Gen] =
     HMap
@@ -38,6 +48,7 @@ object Check {
       .updated(DataType.Float16, Gen.choose(-10f, 10f).map(x => tensor.Float16.fromFloat(x).raw))
       .updated(DataType.Float32, Gen.choose(-10f, 10f))
       .updated(DataType.Float64, Gen.choose(-10.0, 10.0))
+      .updated(DataType.String, genByteString)
 
   def genElemForType(dt: DataType): Gen[dt.Elem] =
     elemForTypeMap[dt.Elem](dt)
@@ -218,6 +229,9 @@ object Check {
     val f: DataType => Gen[Tensor.Unknown] = (dt: DataType) => genTensor(dt)
     genDataType.flatMap(f)
   }
+
+  val genNumericTensor: Gen[Tensor.Unknown] =
+    genTensorU.filter(_.isNumeric)
 
   implicit val arbitraryTensorUnknown: Arbitrary[Tensor.Unknown] =
     Arbitrary(genTensorU)

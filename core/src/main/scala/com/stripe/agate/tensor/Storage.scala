@@ -45,16 +45,24 @@ object Storage {
       if (len == 0L) ()
       else {
         val Dim(off, stride) = dim
-        var i = 0
-        var j = (offset + off).requireInt
-        val strideI: Int = stride.requireInt
-        val limit: Int = len.requireInt
-        while (i < limit) {
-          tb.put(os, data(j))
-          i += 1
-          j += strideI
-        }
+        writeIntoStreamImpl(os, off.requireInt, stride.requireInt, len.requireInt, tb)
       }
+
+    private def writeIntoStreamImpl(
+        os: OutputStream,
+        off: Int,
+        stride: Int,
+        len: Int,
+        tb: ToBytes[A]
+    ): Unit = {
+      var i = 0
+      var j = offset + off
+      while (i < len) {
+        tb.put(os, data(j))
+        i += 1
+        j += stride
+      }
+    }
   }
 
   final case class FloatBufferStorage(buffer: FloatBuffer, offset: Int) extends Storage[Float] {
@@ -165,7 +173,7 @@ object Storage {
 
     def writeIntoStream(os: OutputStream, dim: Dim, len: Long)(implicit tb: ToBytes[A]): Unit =
       foldLen(dim, len, ()) { (storage, _, d, l) =>
-        storage.writeIntoStream(os, d, l)
+        storage.writeIntoStream(os, d, l)(tb)
       }
 
     def writeInto(out: WritableStorage[A], offset: Long, dim: Dim, len: Long): Unit = {
@@ -212,49 +220,57 @@ object Storage {
       maxChunkSizeInBytes: Int
   ): Resource[IO, Storage[dt.Elem]] = {
     val tb = ToBytes.forDataType(dt)
-    val step = tb.size
-    if (maxChunkSizeInBytes < step) {
-      Resource.liftF(
-        IO.raiseError(
-          new IllegalArgumentException(s"maxChunkSizeInBytes=${maxChunkSizeInBytes} < $step")
+    tb.strategy match {
+      case _: ToBytes.Strategy.VarLength[_] =>
+        Resource.liftF(
+          IO.raiseError(
+            new IllegalArgumentException(s"unsupported datatype: $dt")
+          )
         )
-      )
-    } else {
-      openRandomAccessFileChannel(path.toFile).map {
-        case (length, channel) =>
-          val size = count * step
-          if (length < size) {
-            throw TensorException.InsufficentBytesToLoad(length, dt, size)
-          }
-          val maxSingleBytes = (maxChunkSizeInBytes / step) * step
-          @annotation.tailrec
-          def loop(
-              off: Long,
-              count: Long,
-              acc: List[(Storage[dt.Elem], Long)]
-          ): List[(Storage[dt.Elem], Long)] =
-            if (count <= 0) acc.reverse
-            else {
-              val sizeBytes = count * step
-              // definitely an integer multiple of step
-              val thisSize = sizeBytes min maxSingleBytes
-              val offBytes = off * step
-              val mapped = channel.map(FileChannel.MapMode.READ_ONLY, offBytes, thisSize)
-              mapped.order(ByteOrder.LITTLE_ENDIAN)
-              val store = storageFromBuffer(dt, mapped, 0)
-              val thisCount = thisSize / step
-              val nextCount = count - thisCount
-              val nextOff = off + thisCount
-              loop(nextOff, nextCount, (store, off) :: acc)
-            }
+      case ToBytes.Strategy.FixedLength(step) =>
+        if (maxChunkSizeInBytes < step) {
+          Resource.liftF(
+            IO.raiseError(
+              new IllegalArgumentException(s"maxChunkSizeInBytes=${maxChunkSizeInBytes} < $step")
+            )
+          )
+        } else {
+          openRandomAccessFileChannel(path.toFile).map {
+            case (length, channel) =>
+              val size = count * step
+              if (length < size) {
+                throw TensorException.InsufficentBytesToLoad(length, dt, size)
+              }
+              val maxSingleBytes = (maxChunkSizeInBytes / step) * step
+              @annotation.tailrec
+              def loop(
+                  off: Long,
+                  count: Long,
+                  acc: List[(Storage[dt.Elem], Long)]
+              ): List[(Storage[dt.Elem], Long)] =
+                if (count <= 0) acc.reverse
+                else {
+                  val sizeBytes = count * step
+                  // definitely an integer multiple of step
+                  val thisSize = sizeBytes min maxSingleBytes
+                  val offBytes = off * step
+                  val mapped = channel.map(FileChannel.MapMode.READ_ONLY, offBytes, thisSize)
+                  mapped.order(ByteOrder.LITTLE_ENDIAN)
+                  val store = storageFromBuffer(dt, mapped, 0)
+                  val thisCount = thisSize / step
+                  val nextCount = count - thisCount
+                  val nextOff = off + thisCount
+                  loop(nextOff, nextCount, (store, off) :: acc)
+                }
 
-          val (stores, offs) = loop(0L, count, Nil).unzip
-          stores match {
-            case single :: Nil => single
-            case many =>
-              Chunked(many.toArray, maxSingleBytes / step, 0L)
+              val (stores, offs) = loop(0L, count, Nil).unzip
+              stores match {
+                case single :: Nil => single
+                case many =>
+                  Chunked(many.toArray, maxSingleBytes / step, 0L)
+              }
           }
-      }
+        }
     }
   }
 }

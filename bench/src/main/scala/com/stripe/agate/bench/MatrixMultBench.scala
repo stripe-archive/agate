@@ -102,7 +102,7 @@ class MatrixMultBench {
   @OutputTimeUnit(TimeUnit.MICROSECONDS)
   def rowMajorTimesRowMajor(): Array[Float] = {
     val dt = DataType.Float32
-    val on = OnnxNumber.forDataType(dt)
+    val on = OnnxNumber.forDataTypeOrThrow(dt)
     rowTimesRow[dt.Elem](left, right, on)
   }
 

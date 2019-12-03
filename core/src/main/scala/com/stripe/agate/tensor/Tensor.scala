@@ -14,10 +14,12 @@ import java.nio.file.{Files, Path}
 import java.util.Arrays
 import org.typelevel.paiges.Doc
 import scala.util.{Failure, Success, Try}
+import scala.util.control.NonFatal
 
 import scala.collection.mutable.ListBuffer
 
 import Shape._
+import Util.RequireIntOps
 
 abstract class Tensor[D <: DataType] {
   val dataType: D
@@ -112,19 +114,23 @@ abstract class Tensor[D <: DataType] {
   def unsqueeze(axis: Long): Option[Tensor[dataType.type]] =
     dims.unsqueeze(axis).map(withDims)
 
-  def closeTo(that: Tensor[dataType.type], error: Float = 1e-5f): Boolean = {
-    val s0 = axes
-    val s1 = that.axes
-    val num = OnnxNumber.forDataType(dataType)
-    s0 == s1 && s0.forall { cs =>
-      val x0 = this(cs)
-      val x1 = that(cs)
-      Util.closeTo(num.toFloat(x0), num.toFloat(x1), error)
+  def closeTo(that: Tensor[dataType.type], error: Float = 1e-5f): Boolean =
+    OnnxNumber.forDataType(dataType) match {
+      case Success(num) =>
+        val s0 = axes
+        val s1 = that.axes
+        s0 == s1 && s0.forall { cs =>
+          val x0 = this(cs)
+          val x1 = that(cs)
+          Util.closeTo(num.toFloat(x0), num.toFloat(x1), error)
+        }
+      case _ =>
+        // For all non-numeric datatypes, perform a strict equality check
+        this == that
     }
-  }
 
   def l1NormTo(that: Tensor[dataType.type]): Double = {
-    val num = OnnxNumber.forDataType(dataType)
+    val num = OnnxNumber.forDataTypeOrThrow(dataType)
     val s0 = axes
     require(s0 == that.axes, s"expected $s0 == ${that.axes}")
     var res = 0.0
@@ -146,8 +152,8 @@ abstract class Tensor[D <: DataType] {
     val sep = Doc.comma + Doc.line
     dims match {
       case Empty =>
-        val num = OnnxNumber.forDataType(dataType)
-        Doc.text(num.render(scalar))
+        val show = OnnxShow.forDataType(dataType)
+        Doc.text(show.show(scalar))
       case NonEmpty(len, _, _) =>
         val docs = (0L until len).map(i => sliceFirst(i).toDoc)
         (Doc.char('[') + Doc.intercalate(sep, docs) + Doc.char(']')).grouped
@@ -166,7 +172,7 @@ abstract class Tensor[D <: DataType] {
    * returns the transpose this.
    */
   def nonZero: Tensor[DataType.Int64.type] = {
-    val num = OnnxNumber.forDataType(dataType)
+    val num = OnnxNumber.forDataTypeOrThrow(dataType)
 
     val bldr = List.newBuilder[Tensor[DataType.Int64.type]]
     axes.coords.foreach { coord =>
@@ -219,9 +225,12 @@ abstract class Tensor[D <: DataType] {
         //isa.substitute[Tensor](this)
         this.asInstanceOf[Tensor[dest.type]] //fixme
       case None =>
-        val f: dataType.Elem => dest.Elem =
-          OnnxNumber.cast(dataType, dest)
-        this.map(dest)(f)
+        OnnxNumber.cast(dataType, dest) match {
+          case Some(f) =>
+            this.map(dest)(f)
+          case None =>
+            throw new IllegalArgumentException(s"cannot cast from $dataType to $dest")
+        }
     }
 
   /**
@@ -324,7 +333,14 @@ abstract class Tensor[D <: DataType] {
     }
   }
 
-  def writeIntoStream(os: OutputStream)(implicit tb0: ToBytes[dataType.Elem]): Unit =
+  def writeIntoStream(os: OutputStream)(implicit tb: ToBytes[dataType.Elem]): Unit = {
+    if (!tb.isFixedLength) {
+      Tensor.writeIndex(os, dims.totalSize, scalars)
+    }
+    writeDataIntoStream(os)
+  }
+
+  private def writeDataIntoStream(os: OutputStream)(implicit tb0: ToBytes[dataType.Elem]): Unit =
     dims match {
       case Empty =>
         storage.writeIntoStream(os, SingleDim, 1)
@@ -333,7 +349,7 @@ abstract class Tensor[D <: DataType] {
       case NonEmpty(len, _, _) =>
         var i = 0L
         while (i < len) {
-          sliceFirst(i).writeIntoStream(os)
+          sliceFirst(i).writeDataIntoStream(os)
           i += 1L
         }
     }
@@ -402,7 +418,7 @@ abstract class Tensor[D <: DataType] {
     }
 
   def max: dataType.Elem = {
-    val num = OnnxNumber.forDataType(dataType)
+    val num = OnnxNumber.forDataTypeOrThrow(dataType)
     val it = scalars
     if (it.hasNext) {
       var best = it.next
@@ -421,7 +437,7 @@ abstract class Tensor[D <: DataType] {
   def maxAxes(axes: Long*): Try[Tensor[dataType.type]] =
     if (axes.isEmpty) Success(Tensor.const(dataType)(max, Shape.Empty))
     else {
-      val num = OnnxNumber.forDataType(dataType)
+      val num = OnnxNumber.forDataTypeOrThrow(dataType)
       foldMap(dataType, axes.toList, keepDims = false)(x => x, num.max(_, _))
     }
 
@@ -432,7 +448,7 @@ abstract class Tensor[D <: DataType] {
     withDims(dims.select(range))
 
   def sum: dataType.Elem = {
-    val num = OnnxNumber.forDataType(dataType)
+    val num = OnnxNumber.forDataTypeOrThrow(dataType)
     scalars.foldLeft(num.zero)(num.plus)
   }
 
@@ -444,7 +460,7 @@ abstract class Tensor[D <: DataType] {
   def sumAxes(axes: Long*): Try[Tensor[dataType.type]] =
     if (axes.isEmpty) Success(Tensor.const(dataType)(sum, Shape.Empty))
     else {
-      val num = OnnxNumber.forDataType(dataType)
+      val num = OnnxNumber.forDataTypeOrThrow(dataType)
       foldMap(dataType, axes.toList, keepDims = false)(x => x, num.plus(_, _))
     }
 
@@ -458,7 +474,7 @@ abstract class Tensor[D <: DataType] {
       // sum on all axes
       Success(Tensor.const(dataType)(sum, axes.toSingleton))
     } else {
-      val num = OnnxNumber.forDataType(dataType)
+      val num = OnnxNumber.forDataTypeOrThrow(dataType)
       foldMap(dataType, sumAxes.toList, keepDims = true)(x => x, num.plus(_, _))
     }
 
@@ -521,6 +537,12 @@ abstract class Tensor[D <: DataType] {
       case None =>
         Failure(new Exception(s"tensor's type ${dataType} is not $dt"))
     }
+
+  /**
+   * Returns `true` if this tensor has an [[OnnxNumber]] instance available for
+   * its data type.
+   */
+  def isNumeric: Boolean = OnnxNumber.forDataType(dataType).isSuccess
 }
 
 object Tensor {
@@ -725,7 +747,7 @@ object Tensor {
 
   def identityMatrix(dt: DataType, size: Long): Tensor[dt.type] = {
     implicit val alloc = StorageAllocator.forDataType(dt)
-    val num = OnnxNumber.forDataType(dt)
+    val num = OnnxNumber.forDataTypeOrThrow(dt)
     val len = size * (size.toLong)
     val data = alloc.allocate(len)
     var i = 0L
@@ -750,24 +772,55 @@ object Tensor {
   def loadBytes(bytes: Array[Byte], dt: DataType, axes: Axes): Try[Tensor[dt.type]] = {
     implicit val alloc = StorageAllocator.forDataType(dt)
     val size = axes.totalSize
-    val tb = ToBytes.forDataType(dt)
-    val step = tb.size
-    val len = size * step
-    if (bytes.length < len)
-      Failure(TensorException.InsufficentBytesToLoad(bytes.length.toLong, dt, len))
-    else
-      Success {
-        val data = alloc.allocate(size)
-        var i = 0
-        var j = 0L
-        while (i < len) {
-          val x = tb.read(bytes, i)
-          data.writeAt(j, x)
-          i += step
-          j += 1L
-        }
-        Tensor(dt, axes.asRowMajorDims)(data.toStorage)
+    val data = alloc.allocate(size)
+    if (size == 0L) {
+      Success(Tensor(dt, axes.asRowMajorDims)(data.toStorage))
+    } else {
+      val tb = ToBytes.forDataType(dt)
+      val step = tb.strategy match {
+        case ToBytes.Strategy.FixedLength(size) => size
+        case _                                  => 8
       }
+      val len = size * step
+      if (bytes.length < len)
+        Failure(TensorException.InsufficentBytesToLoad(bytes.length.toLong, dt, len))
+      else
+        try {
+          var i = 0
+          var j = 0L
+          if (tb.isFixedLength) {
+            while (i < len) {
+              val x = tb.read(bytes, i)
+              data.writeAt(j, x)
+              i += step
+              j += 1L
+            }
+          } else {
+            val otb = ToBytes.longToBytes
+            try {
+              while (i < len) {
+                val offset = otb.read(bytes, i).requireInt
+                val x = tb.read(bytes, offset)
+                data.writeAt(j, x)
+                i += step
+                j += 1L
+              }
+            } catch {
+              case (t: IndexOutOfBoundsException) =>
+                val minBytes = otb.read(bytes, (len.toInt - step)) + 1
+                throw new TensorException.InsufficentBytesToLoad(
+                  bytes.length.toLong,
+                  dt,
+                  minBytes,
+                  t
+                )
+            }
+          }
+          Success(Tensor(dt, axes.asRowMajorDims)(data.toStorage))
+        } catch {
+          case NonFatal(t) => Failure(t)
+        }
+    }
   }
 
   // ~32MB
@@ -803,4 +856,17 @@ object Tensor {
       axes: Axes
   ): Resource[IO, Tensor[dt.type]] =
     loadMappedTensor(dt, path, axes.asRowMajorDims)
+
+  private def writeIndex[A](os: OutputStream, len: Long, scalars: Iterator[A])(
+      implicit tb: ToBytes[A]
+  ): Unit = {
+    val otb = ToBytes.longToBytes
+    var dataOffset: Long = len * 8
+    var i = 0
+    while (i < len) {
+      otb.put(os, dataOffset)
+      dataOffset += tb.size(scalars.next())
+      i += 1
+    }
+  }
 }

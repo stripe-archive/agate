@@ -46,7 +46,8 @@ object OperationTest extends Properties("OperationTest") {
                   outReg.getAndUnify(reg, ex.dataType)
                 t match {
                   case Success(got) => p && (got =~= ex)
-                  case Failure(err) => p && (Prop(false) :| err.toString)
+                  case Failure(err) =>
+                    p && (Prop(false) :| err.toString)
                 }
             }
           case Failure(err) =>

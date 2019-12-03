@@ -1,5 +1,6 @@
 package com.stripe.agate.tensor
 
+import com.google.protobuf.ByteString
 import com.stripe.dagon.HMap
 import scala.reflect.ClassTag
 
@@ -34,6 +35,9 @@ object StorageAllocator {
   implicit val doubleAllocator: StorageAllocator[Double] =
     new StorageAllocator[Double] {}
 
+  implicit val stringAllocator: StorageAllocator[ByteString] =
+    new StorageAllocator[ByteString] {}
+
   def forDataType(dt: DataType): StorageAllocator[dt.Elem] =
     forDataTypeMap(dt)
 
@@ -50,4 +54,5 @@ object StorageAllocator {
       .updated(DataType.Float16, shortAllocator)
       .updated(DataType.Float32, floatAllocator)
       .updated(DataType.Float64, doubleAllocator)
+      .updated(DataType.String, stringAllocator)
 }

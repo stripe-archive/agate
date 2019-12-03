@@ -92,7 +92,7 @@ y = softmax_2d(x)
   // if you softmax each element individually they all become 1.
   property("Softmax(t, t.rank) = const(1)") = forAll { (t: Tensor.F) =>
     val got = Softmax(t, axis = t.rank).get
-    val num = OnnxNumber.forDataType(t.dataType)
+    val num = OnnxNumber.forDataTypeOrThrow(t.dataType)
     val expected = Tensor.const(t.dataType)(num.one, t.axes)
     Claim(got == expected)
   }
@@ -100,7 +100,7 @@ y = softmax_2d(x)
   // adding a constant to each element doesn't change softmax.
   property("Softmax(t, axis) = Softmax(t + const(1), axis)") = forAll(genArg) {
     case Arg(t0, axis) =>
-      val num = OnnxNumber.forDataType(t0.dataType)
+      val num = OnnxNumber.forDataTypeOrThrow(t0.dataType)
       val t1 = t0.map(x => num.plus(x, num.one))
       val t2 = Softmax(t0, axis).get
       val t3 = Softmax(t1, axis).get

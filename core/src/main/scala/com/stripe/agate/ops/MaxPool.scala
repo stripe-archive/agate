@@ -18,8 +18,8 @@ object MaxPool {
       pads: List[Long],
       storageOrder: StorageOrder,
       strides: List[Long]
-  ): Try[Output[dt.type]] = {
-    val on: OnnxNumber[dt.Elem] = OnnxNumber.forDataType(dt)
+  ): Try[Output[dt.type]] = Try {
+    val on: OnnxNumber[dt.Elem] = OnnxNumber.forDataTypeOrThrow(dt)
 
     require(autoPad == AutoPad.NotSet)
     require(storageOrder == StorageOrder.RowMajor)
@@ -154,7 +154,7 @@ t      1 1 1 1 1
         }
     }
 
-    Try(Output(Tensor(dt, outputDims)(writable.toStorage)))
+    Output(Tensor(dt, outputDims)(writable.toStorage))
   }
 
   sealed abstract class AutoPad

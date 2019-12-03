@@ -34,7 +34,7 @@ object Operation {
     def apply(regs0: Registers): Try[Registers] =
       for {
         t0 <- regs0.get(input)
-        num = OnnxNumber.forDataType(t0.dataType)
+        num <- OnnxNumber.forDataType(t0.dataType)
         ev <- OnnxNumber.toFloating(num)
         t1 = t0.map(op(ev))
         regs1 <- regs0.create(output, t1)
@@ -79,7 +79,8 @@ object Operation {
         left0 <- regs0.get(input0)
         left = left0.asDataTyped
         right <- regs0.getAndUnify(input1, left.dataType)
-        result <- Tensor.map2(left.dataType)(left, right)(op(OnnxNumber.forDataType(left.dataType)))
+        num <- OnnxNumber.forDataType(left.dataType)
+        result <- Tensor.map2(left.dataType)(left, right)(op(num))
         regs1 <- regs0.create(output, result)
       } yield regs1
   }

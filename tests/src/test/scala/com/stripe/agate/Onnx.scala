@@ -53,6 +53,8 @@ object Onnx {
         tp.copy(floatData = toSeq[Float](dt)(x => x))
       case dt: DataType.Float64.type =>
         tp.copy(doubleData = toSeq[Double](dt)(x => x))
+      case dt: DataType.String.type =>
+        tp.copy(stringData = toSeq[ByteString](dt)(x => x))
     }
   }
 

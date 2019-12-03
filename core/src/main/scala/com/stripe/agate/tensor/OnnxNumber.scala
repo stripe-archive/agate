@@ -34,8 +34,6 @@ sealed trait OnnxNumber[@specialized(Byte, Short, Int, Long, Float, Double) A] {
   val dataType: Data
   def typeName: String = dataType.typeName
 
-  def render(x: A): String
-
   def zero: A
   def one: A
   def times(left: A, right: A): A
@@ -114,7 +112,6 @@ object OnnxNumber {
   val Uint8: OnnxIntegral[Byte] =
     new OnnxIntegral[Byte] {
       type Data = DataType.Uint8.type
-      def render(x: Byte): String = (x & 0xff).toString
       val dataType = DataType.Uint8
       val zero: Byte = 0.toByte
       val one: Byte = 1.toByte
@@ -144,7 +141,6 @@ object OnnxNumber {
   val Uint16: OnnxIntegral[Short] =
     new OnnxIntegral[Short] {
       type Data = DataType.Uint16.type
-      def render(x: Short): String = (x & 0xffff).toString
       val dataType = DataType.Uint16
       val zero: Short = 0.toShort
       val one: Short = 1.toShort
@@ -175,7 +171,6 @@ object OnnxNumber {
     new OnnxIntegral[Byte] {
       type Data = DataType.Int8.type
       val dataType = DataType.Int8
-      def render(x: Byte): String = x.toString
       val zero: Byte = 0.toByte
       val one: Byte = 1.toByte
       def times(left: Byte, right: Byte): Byte = (left * right).toByte
@@ -201,7 +196,6 @@ object OnnxNumber {
     new OnnxIntegral[Short] {
       type Data = DataType.Int16.type
       val dataType = DataType.Int16
-      def render(x: Short): String = x.toString
       val zero: Short = 0.toShort
       val one: Short = 1.toShort
       def times(left: Short, right: Short): Short = (left * right).toShort
@@ -227,7 +221,6 @@ object OnnxNumber {
     new OnnxIntegral[Int] {
       type Data = DataType.Int32.type
       val dataType = DataType.Int32
-      def render(x: Int): String = x.toString
       def zero: Int = 0
       def one: Int = 1
       def times(left: Int, right: Int): Int = left * right
@@ -253,7 +246,6 @@ object OnnxNumber {
     new OnnxIntegral[Long] {
       type Data = DataType.Int64.type
       val dataType = DataType.Int64
-      def render(x: Long): String = x.toString
       def zero: Long = 0L
       def one: Long = 1L
       def times(left: Long, right: Long): Long = (left * right)
@@ -279,8 +271,6 @@ object OnnxNumber {
     new OnnxFloating[Short] {
       type Data = DataType.BFloat16.type
       val dataType = DataType.BFloat16
-
-      def render(x: Short): String = lift(x).toString
 
       val zero: Short = B16.Zero.raw
       val one: Short = B16.One.raw
@@ -347,8 +337,6 @@ object OnnxNumber {
       type Data = DataType.Float16.type
       val dataType = DataType.Float16
 
-      def render(x: Short): String = lift(x).toString
-
       val zero: Short = F16.Zero.raw
       val one: Short = F16.One.raw
 
@@ -413,7 +401,6 @@ object OnnxNumber {
     new OnnxFloating[Float] {
       type Data = DataType.Float32.type
       val dataType = DataType.Float32
-      def render(x: Float): String = x.toString
       def zero: Float = 0f
       def one: Float = 1f
       def times(left: Float, right: Float): Float =
@@ -471,7 +458,6 @@ object OnnxNumber {
     new OnnxFloating[Double] {
       type Data = DataType.Float64.type
       val dataType = DataType.Float64
-      def render(x: Double): String = x.toString
       def zero: Double = 0.0
       def one: Double = 1.0
       def times(left: Double, right: Double): Double =
@@ -524,8 +510,15 @@ object OnnxNumber {
       }
     }
 
-  def forDataType(dt: DataType): OnnxNumber[dt.Elem] =
-    forDataTypeMap(dt)
+  def forDataType(dt: DataType): Try[OnnxNumber[dt.Elem]] =
+    Try(forDataTypeOrThrow(dt))
+
+  def forDataTypeOrThrow(dt: DataType): OnnxNumber[dt.Elem] =
+    forDataTypeMap.get(dt: DataType.Aux[dt.Elem]) match {
+      case Some(num) => num
+      case None =>
+        throw new IllegalArgumentException(s"non-numeric datatype=$dt")
+    }
 
   private[this] val forDataTypeMap: HMap[DataType.Aux, OnnxNumber] =
     HMap
@@ -541,14 +534,20 @@ object OnnxNumber {
       .updated(DataType.Float32, OnnxNumber.Float32)
       .updated(DataType.Float64, OnnxNumber.Float64)
 
-  def cast(from: DataType, to: DataType): from.Elem => to.Elem = {
-    val onF = forDataType(from)
-    val onT = forDataType(to)
-
-    if (onT.isInstanceOf[OnnxIntegral[_]]) { (a: from.Elem) =>
-      onT.fromLong(onF.toLong(a))
-    } else { (a: from.Elem) =>
-      onT.fromDouble(onF.toDouble(a))
+  def cast(from: DataType, to: DataType): Option[from.Elem => to.Elem] =
+    forDataTypeMap.get(from: DataType.Aux[from.Elem]) match {
+      case Some(onF) =>
+        forDataTypeMap.get(to: DataType.Aux[to.Elem]) match {
+          case Some(onT) =>
+            if (onT.isInstanceOf[OnnxIntegral[_]]) Some({ (a: from.Elem) =>
+              onT.fromLong(onF.toLong(a))
+            })
+            else
+              Some({ (a: from.Elem) =>
+                onT.fromDouble(onF.toDouble(a))
+              })
+          case None => None
+        }
+      case None => None
     }
-  }
 }
