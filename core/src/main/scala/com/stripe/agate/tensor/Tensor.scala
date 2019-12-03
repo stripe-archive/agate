@@ -125,7 +125,7 @@ abstract class Tensor[D <: DataType] {
           Util.closeTo(num.toFloat(x0), num.toFloat(x1), error)
         }
       case _ =>
-       // For all non-numeric datatypes, perform a strict equality check
+        // For all non-numeric datatypes, perform a strict equality check
         this == that
     }
 
