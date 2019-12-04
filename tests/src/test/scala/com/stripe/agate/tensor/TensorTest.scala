@@ -205,8 +205,8 @@ object TensorTest extends Properties("TensorTest") {
     Claim(t != "horse")
   }
 
-  property("(x = y) ~ (x.hashCode = y.hashCode)") = forAll { (x: Tensor.U, y: Tensor.U) =>
-    Claim((x == y) == (x.hashCode == y.hashCode))
+  property("(x = y) -> (x.hashCode = y.hashCode)") = forAll { (x: Tensor.U, y: Tensor.U) =>
+    Claim((x == y) && (x.hashCode == y.hashCode) || (x != y))
   }
 
   property("scalar invalid on vectors") = forAll { (m: Matrix) =>

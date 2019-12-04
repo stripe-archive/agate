@@ -38,6 +38,9 @@ object StorageAllocator {
   implicit val stringAllocator: StorageAllocator[ByteString] =
     new StorageAllocator[ByteString] {}
 
+  implicit val boolAllocator: StorageAllocator[Boolean] =
+    new StorageAllocator[Boolean] {}
+
   def forDataType(dt: DataType): StorageAllocator[dt.Elem] =
     forDataTypeMap(dt)
 
@@ -55,4 +58,5 @@ object StorageAllocator {
       .updated(DataType.Float32, floatAllocator)
       .updated(DataType.Float64, doubleAllocator)
       .updated(DataType.String, stringAllocator)
+      .updated(DataType.Bool, boolAllocator)
 }

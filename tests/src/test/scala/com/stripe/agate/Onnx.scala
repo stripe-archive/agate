@@ -55,6 +55,8 @@ object Onnx {
         tp.copy(doubleData = toSeq[Double](dt)(x => x))
       case dt: DataType.String.type =>
         tp.copy(stringData = toSeq[ByteString](dt)(x => x))
+      case dt: DataType.Bool.type =>
+        tp.copy(int32Data = toSeq[Int](dt)(x => if (x) 1 else 0))
     }
   }
 
