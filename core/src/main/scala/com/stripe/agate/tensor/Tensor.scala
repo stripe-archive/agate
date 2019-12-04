@@ -235,7 +235,7 @@ abstract class Tensor[D <: DataType] {
               case Success(num) if dataType == DataType.Bool =>
                 val f = num.fromLong(0L)
                 val t = num.fromLong(1L)
-                this.map(dest) { (x: Any) =>
+                this.cast(DataType.Bool).map(dest) { x =>
                   if (x == true) t else f
                 }
               case _ =>
