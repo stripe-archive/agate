@@ -24,7 +24,7 @@ object OnnxShow {
       if ((c >= 32 && c <= 126) && (c != '\''.toInt) && (c != '\\'.toInt)) {
         bldr.append(c.toChar)
       } else {
-        bldr.append(f"\\x$c%02x")
+        bldr.append(f"\\x${c&0xFF}%02x")
       }
     }
     bldr.append("'")
