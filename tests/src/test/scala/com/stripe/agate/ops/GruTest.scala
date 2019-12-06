@@ -35,27 +35,28 @@ object GruTest extends Properties("GruTest") {
       activationAlphas: List[Float],
       activationBetas: List[Float]
   ): Prop = {
-    val got = try {
-      Gru(Float32)(
-        x,
-        w,
-        r,
-        b,
-        sequenceLens,
-        initialH,
-        activationAlphas,
-        activationBetas,
-        activations,
-        clip,
-        direction,
-        hiddenSize,
-        linearBeforeReset
-      ).get
-    } catch {
-      case (e: Exception) =>
-        e.printStackTrace()
-        throw e
-    }
+    val got =
+      try {
+        Gru(Float32)(
+          x,
+          w,
+          r,
+          b,
+          sequenceLens,
+          initialH,
+          activationAlphas,
+          activationBetas,
+          activations,
+          clip,
+          direction,
+          hiddenSize,
+          linearBeforeReset
+        ).get
+      } catch {
+        case (e: Exception) =>
+          e.printStackTrace()
+          throw e
+      }
 
     val expected = Gru.Output(y, yH)
 

@@ -24,12 +24,11 @@ object ScalarParser {
   }
 
   private def make[A](p: P[String])(f: String => A): P[A] =
-    p.flatMap(
-      s =>
-        Try(f(s)) match {
-          case Success(a) => PassWith(a)
-          case Failure(_) => Fail
-        }
+    p.flatMap(s =>
+      Try(f(s)) match {
+        case Success(a) => PassWith(a)
+        case Failure(_) => Fail
+      }
     )
 
   val floatingParser: P[String] = {
