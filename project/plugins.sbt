@@ -1,7 +1,7 @@
 addSbtPlugin("com.eed3si9n"       % "sbt-assembly"  % "0.14.10")
 addSbtPlugin("com.eed3si9n"       % "sbt-unidoc"    % "0.4.2")
 addSbtPlugin("com.github.gseitz"  % "sbt-release"   % "1.0.12")
-addSbtPlugin("com.jsuereth"       % "sbt-pgp"       % "2.0.0")
+addSbtPlugin("com.jsuereth"       % "sbt-pgp"       % "2.0.1")
 addSbtPlugin("com.typesafe.sbt"   % "sbt-git"       % "1.0.0")
 addSbtPlugin("no.arktekk.sbt"     % "aether-deploy" % "0.23.0")
 addSbtPlugin("org.scalameta"      % "sbt-mdoc"      % "2.0.3" )
