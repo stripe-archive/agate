@@ -24,22 +24,23 @@ object MaxPoolTest extends Properties("MaxPoolTest") {
 
     val expected = tensor"[[[2 3 4] [6 7 8] [10 11 12]]]"
 
-    val got = try {
-      MaxPool(Float32)(
-        input = input,
-        autoPad = MaxPool.AutoPad.NotSet,
-        ceilMode = false,
-        dilations = None,
-        kernelShape = List(2),
-        pads = List(0, 0),
-        storageOrder = MaxPool.StorageOrder.RowMajor,
-        strides = List(1)
-      )
-    } catch {
-      case (e: Exception) =>
-        e.printStackTrace()
-        throw e
-    }
+    val got =
+      try {
+        MaxPool(Float32)(
+          input = input,
+          autoPad = MaxPool.AutoPad.NotSet,
+          ceilMode = false,
+          dilations = None,
+          kernelShape = List(2),
+          pads = List(0, 0),
+          storageOrder = MaxPool.StorageOrder.RowMajor,
+          strides = List(1)
+        )
+      } catch {
+        case (e: Exception) =>
+          e.printStackTrace()
+          throw e
+      }
 
     Claim(got == Success(MaxPool.Output(expected)))
   }
@@ -49,22 +50,23 @@ object MaxPoolTest extends Properties("MaxPoolTest") {
 
     val expected = tensor"[[[ [11 12] [15 16] ]]]"
 
-    val got = try {
-      MaxPool(Float32)(
-        input = input,
-        autoPad = MaxPool.AutoPad.NotSet,
-        ceilMode = true,
-        dilations = None,
-        kernelShape = List(3, 3),
-        pads = List(0, 0, 0, 0),
-        storageOrder = MaxPool.StorageOrder.RowMajor,
-        strides = List(2, 2)
-      )
-    } catch {
-      case (e: Exception) =>
-        e.printStackTrace()
-        throw e
-    }
+    val got =
+      try {
+        MaxPool(Float32)(
+          input = input,
+          autoPad = MaxPool.AutoPad.NotSet,
+          ceilMode = true,
+          dilations = None,
+          kernelShape = List(3, 3),
+          pads = List(0, 0, 0, 0),
+          storageOrder = MaxPool.StorageOrder.RowMajor,
+          strides = List(2, 2)
+        )
+      } catch {
+        case (e: Exception) =>
+          e.printStackTrace()
+          throw e
+      }
 
     Claim(got == Success(MaxPool.Output(expected)))
   }
@@ -74,22 +76,23 @@ object MaxPoolTest extends Properties("MaxPoolTest") {
 
     val expected = tensor"[[[ [11] ]]]"
 
-    val got = try {
-      MaxPool(Float32)(
-        input = input,
-        autoPad = MaxPool.AutoPad.NotSet,
-        ceilMode = false,
-        dilations = None,
-        kernelShape = List(3, 3),
-        pads = List(0, 0, 0, 0),
-        storageOrder = MaxPool.StorageOrder.RowMajor,
-        strides = List(2, 2)
-      )
-    } catch {
-      case (e: Exception) =>
-        e.printStackTrace()
-        throw e
-    }
+    val got =
+      try {
+        MaxPool(Float32)(
+          input = input,
+          autoPad = MaxPool.AutoPad.NotSet,
+          ceilMode = false,
+          dilations = None,
+          kernelShape = List(3, 3),
+          pads = List(0, 0, 0, 0),
+          storageOrder = MaxPool.StorageOrder.RowMajor,
+          strides = List(2, 2)
+        )
+      } catch {
+        case (e: Exception) =>
+          e.printStackTrace()
+          throw e
+      }
 
     Claim(got == Success(MaxPool.Output(expected)))
   }
@@ -99,22 +102,23 @@ object MaxPoolTest extends Properties("MaxPoolTest") {
 
     val expected = tensor"[[[3]]]"
 
-    val got = try {
-      MaxPool(Float32)(
-        input = input,
-        autoPad = MaxPool.AutoPad.NotSet,
-        ceilMode = false,
-        dilations = None,
-        kernelShape = List(3),
-        pads = List(0, 0),
-        storageOrder = MaxPool.StorageOrder.RowMajor,
-        strides = List(2)
-      )
-    } catch {
-      case (e: Exception) =>
-        e.printStackTrace()
-        throw e
-    }
+    val got =
+      try {
+        MaxPool(Float32)(
+          input = input,
+          autoPad = MaxPool.AutoPad.NotSet,
+          ceilMode = false,
+          dilations = None,
+          kernelShape = List(3),
+          pads = List(0, 0),
+          storageOrder = MaxPool.StorageOrder.RowMajor,
+          strides = List(2)
+        )
+      } catch {
+        case (e: Exception) =>
+          e.printStackTrace()
+          throw e
+      }
 
     Claim(got == Success(MaxPool.Output(expected)))
   }
@@ -124,22 +128,23 @@ object MaxPoolTest extends Properties("MaxPoolTest") {
 
     val expected = tensor"[[[4]]]"
 
-    val got = try {
-      MaxPool(Float32)(
-        input = input,
-        autoPad = MaxPool.AutoPad.NotSet,
-        ceilMode = false,
-        dilations = None,
-        kernelShape = List(4),
-        pads = List(0, 0),
-        storageOrder = MaxPool.StorageOrder.RowMajor,
-        strides = List(2)
-      )
-    } catch {
-      case (e: Exception) =>
-        e.printStackTrace()
-        throw e
-    }
+    val got =
+      try {
+        MaxPool(Float32)(
+          input = input,
+          autoPad = MaxPool.AutoPad.NotSet,
+          ceilMode = false,
+          dilations = None,
+          kernelShape = List(4),
+          pads = List(0, 0),
+          storageOrder = MaxPool.StorageOrder.RowMajor,
+          strides = List(2)
+        )
+      } catch {
+        case (e: Exception) =>
+          e.printStackTrace()
+          throw e
+      }
 
     Claim(got == Success(MaxPool.Output(expected)))
   }

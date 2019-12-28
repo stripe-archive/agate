@@ -48,13 +48,11 @@ object Float16Test extends Properties("Float16Test") {
 
   property("x.isNaN -> x.toFloat.isNaN") = exhaust(x => x.isNaN == x.toFloat.isNaN)
 
-  property("x.isInfinite -> x.toFloat.isInfinite") = exhaust(
-    x => x.isInfinite == x.toFloat.isInfinite
-  )
+  property("x.isInfinite -> x.toFloat.isInfinite") =
+    exhaust(x => x.isInfinite == x.toFloat.isInfinite)
 
-  property("x.signum -> x.toFloat.signum") = exhaust(
-    x => JFloat.compare(x.signum, Math.signum(x.toFloat)) == 0
-  )
+  property("x.signum -> x.toFloat.signum") =
+    exhaust(x => JFloat.compare(x.signum, Math.signum(x.toFloat)) == 0)
 
   property("isInfinite -> == +/- inf") = exhaust { x =>
     if (x.isInfinite) {
@@ -320,22 +318,18 @@ object Float16Test extends Properties("Float16Test") {
     Float16.PositiveInfinity.isInfinite && Float16.PositiveInfinity.isPositiveInfinity
   )
 
-  property("MinValue is correct") = exhaustNonNaN(
-    x => x >= Float16.MinValue || x == Float16.NegativeInfinity
-  )
-  property("MaxValue is true") = exhaustNonNaN(
-    x => x <= Float16.MaxValue || x == Float16.PositiveInfinity
-  )
+  property("MinValue is correct") =
+    exhaustNonNaN(x => x >= Float16.MinValue || x == Float16.NegativeInfinity)
+  property("MaxValue is true") =
+    exhaustNonNaN(x => x <= Float16.MaxValue || x == Float16.PositiveInfinity)
 
   property("MinPositive is correct") = exhaustNonNaN(x => x >= Float16.MinPositive || x.signum < 1f)
   property("MaxNegative is true") = exhaustNonNaN(x => x <= Float16.MaxNegative || x.signum > -1f)
 
-  property("MinPositiveNormal is correct") = exhaustNonNaN(
-    x => x >= Float16.MinPositive || x.signum < 1f || x.isSubnormal
-  )
-  property("MaxNegativeNormal is true") = exhaustNonNaN(
-    x => x <= Float16.MaxNegative || x.signum > -1f || x.isSubnormal
-  )
+  property("MinPositiveNormal is correct") =
+    exhaustNonNaN(x => x >= Float16.MinPositive || x.signum < 1f || x.isSubnormal)
+  property("MaxNegativeNormal is true") =
+    exhaustNonNaN(x => x <= Float16.MaxNegative || x.signum > -1f || x.isSubnormal)
 
   property("(x * y) = z, then z.isZero if x.isZero || y.isZero") = forAll(genNonNaN, genNonNaN) {
     (x, y) =>
