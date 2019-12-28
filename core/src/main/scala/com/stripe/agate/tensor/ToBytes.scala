@@ -10,6 +10,7 @@ import com.stripe.dagon.HMap
  * A type class for serializing values of type `A` into bytes.
  */
 trait ToBytes[@specialized A] {
+
   /**
    * The strategy is used to determine whether values of type `A` are a "fixed
    * length" encoding or "variable length" encoding. In the case of fixed

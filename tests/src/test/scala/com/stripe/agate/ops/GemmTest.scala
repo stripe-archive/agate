@@ -66,13 +66,14 @@ object GemmTest extends Properties("GemmTest") {
 
   property("A x 0 + 0 = 0") = forAll { (g0: GemmArgs) =>
     val g1 = g0.withZeroB.withZeroC
-    val res = try {
-      g1.run
-    } catch {
-      case (e: Exception) =>
-        e.printStackTrace()
-        throw e
-    }
+    val res =
+      try {
+        g1.run
+      } catch {
+        case (e: Exception) =>
+          e.printStackTrace()
+          throw e
+      }
     Claim(res == Some(g1.c))
   }
 

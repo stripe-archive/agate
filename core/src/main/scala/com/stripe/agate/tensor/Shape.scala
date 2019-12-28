@@ -199,6 +199,7 @@ object Shape {
     )
   }
   object AxisRange {
+
     /**
      * Make a range with a default step size of 0
      */
@@ -276,6 +277,7 @@ object Shape {
   }
 
   implicit class AxesOps(val axes: Axes) extends AnyVal {
+
     /**
      * If we have two shapes that are equal in size in all but one axis, we can
      * concatenate them along the non-equal axis
