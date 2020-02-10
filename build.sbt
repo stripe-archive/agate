@@ -19,7 +19,7 @@ lazy val agateSettings = Seq(
     "org.scalameta" %% "fastparse" % fastparseVersion ::
     "com.monovore" %% "decline" % "1.0.0" ::
     "org.scalacheck" %% "scalacheck" % scalacheckVersion % "test" ::
-    "org.typelevel" %% "claimant" % "0.1.2" % "test" ::
+    "org.typelevel" %% "claimant" % "0.1.3" % "test" ::
     "org.typelevel" %% "cats-core" % "2.0.0" ::
     "org.typelevel" %% "cats-effect" % "2.0.0" ::
     "org.typelevel" %% "paiges-core" % "0.3.0" ::

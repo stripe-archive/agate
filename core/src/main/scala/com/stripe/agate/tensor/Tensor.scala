@@ -808,10 +808,11 @@ object Tensor {
             }
           } else {
             val otb = ToBytes.longToBytes
+            val dataStart = len.requireInt
             try {
               while (i < len) {
                 val offset = otb.read(bytes, i).requireInt
-                val x = tb.read(bytes, offset)
+                val x = tb.read(bytes, dataStart + offset)
                 data.writeAt(j, x)
                 i += step
                 j += 1L
@@ -872,7 +873,7 @@ object Tensor {
       implicit tb: ToBytes[A]
   ): Unit = {
     val otb = ToBytes.longToBytes
-    var dataOffset: Long = len * 8
+    var dataOffset: Long = 0
     var i = 0
     while (i < len) {
       otb.put(os, dataOffset)
