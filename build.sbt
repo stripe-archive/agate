@@ -8,7 +8,7 @@ lazy val agateSettings = Seq(
 
   organization := "com.stripe",
   scalaVersion := "2.13.1",
-  crossScalaVersions := Seq("2.11.12", "2.12.10", "2.13.1"),
+  crossScalaVersions := Seq("2.13.5", "2.12.10", "2.13.1"),
 
   Global / onChangedBuildSource := ReloadOnSourceChanges,
 
