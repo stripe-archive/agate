@@ -14,7 +14,7 @@ lazy val agateSettings = Seq(
 
   libraryDependencies ++=
     "org.scala-lang" % "scala-reflect" % scalaVersion.value ::
-    "com.chuusai" %% "shapeless" % "2.3.3" ::
+    "com.chuusai" %% "shapeless" % "2.3.4" ::
     "com.stripe" %% "dagon-core" % "0.3.3" ::
     "org.scalameta" %% "fastparse" % fastparseVersion ::
     "com.monovore" %% "decline" % "1.0.0" ::
