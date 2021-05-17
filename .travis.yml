@@ -3,7 +3,7 @@ jdk: openjdk11
 
 matrix:
   include:
-    - scala: 2.13.1
+    - scala: 2.13.6
       env: PLATFORM="jvm"
       script: sbt "++2.13.1" scalafmtCheckAll coverage core/test tests/test bench/compile docs/mdoc coverageReport && codecov
 

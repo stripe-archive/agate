@@ -7,8 +7,8 @@ lazy val fastparseVersion = "1.0.1"
 lazy val agateSettings = Seq(
 
   organization := "com.stripe",
-  scalaVersion := "2.13.1",
-  crossScalaVersions := Seq("2.11.12", "2.12.10", "2.13.1"),
+  scalaVersion := "2.13.6",
+  crossScalaVersions := Seq("2.11.12", "2.12.10", "2.13.6"),
 
   Global / onChangedBuildSource := ReloadOnSourceChanges,
 
