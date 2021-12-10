@@ -30,7 +30,7 @@ object Publish {
   lazy val settings = Seq(
     homepage := Some(url("https://github.com/stripe/agate")),
     publishMavenStyle := true,
-    publishArtifact in Test := false,
+    (Test / publishArtifact) := false,
     pomIncludeRepository := Function.const(false),
     publish := {
       if (isSnapshot.value && useAether) {
@@ -40,7 +40,7 @@ object Publish {
       }
     },
     publishTo := getPublishTo(isSnapshot.value),
-    publishArtifact in Test := false,
+    (Test / publishArtifact) := false,
     publishConfiguration := publishConfiguration.value.withOverwrite(true),
     pomIncludeRepository := Function.const(false),
     releasePublishArtifactsAction := publishSigned.value,
