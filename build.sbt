@@ -44,10 +44,10 @@ lazy val agateSettings = Seq(
     case _ =>
       Nil
   }),
-  scalacOptions in (Compile, console) ~= { _.filterNot("-Xlint" == _) },
-  scalacOptions in (Test, console) := (scalacOptions in (Compile, console)).value,
+  (Compile / console / scalacOptions) ~= { _.filterNot("-Xlint" == _) },
+  (Test / console / scalacOptions) := (Compile / console / scalacOptions).value,
 
-  testOptions in Test ++=
+  (Test / testOptions) ++=
     Tests.Argument(TestFrameworks.ScalaCheck, "-verbosity", "1") ::
     Tests.Argument(TestFrameworks.ScalaCheck, "-minSuccessfulTests", "5000") ::
     Nil,
@@ -66,8 +66,8 @@ lazy val agateSettings = Seq(
   // optimize for-comprehensions
   addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
 
-  PB.targets in Compile := Seq(
-    scalapb.gen() -> (sourceManaged in Compile).value
+  (Compile / PB.targets) := Seq(
+    scalapb.gen() -> (Compile / sourceManaged).value
   ))
 
 lazy val agate = project
@@ -82,7 +82,7 @@ lazy val core = project
   .in(file("core"))
   .settings(name := "agate-core")
   .settings(agateSettings: _*)
-  .settings(mainClass in assembly := Some("com.stripe.agate.eval.Agate"))
+  .settings((assembly / mainClass) := Some("com.stripe.agate.eval.Agate"))
   .settings(Publish.settings: _*)
 
 lazy val laws = project
