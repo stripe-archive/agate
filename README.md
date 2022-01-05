@@ -1,3 +1,7 @@
+> <img src="https://stripe.dev/images/badges/archived.png" width="250">
+>
+> This project is inactive and is no longer being maintained.
+
 # Agate
 
 Agate is a library designed to support evaluation of deep learning
